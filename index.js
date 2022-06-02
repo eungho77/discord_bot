@@ -27,21 +27,11 @@ const exampleEmbed = {
 };
 
 client.on('ready', () => {
-    // console.log(`${client.user.tag}에 로그인하였습니다!`)
-    // exampleEmbed.description = `${client.user.tag}에 로그인하였습니다!`;
-    // exampleEmbed.fields = [];
-
     console.log(`${client.user.tag}에 로그인하였습니다!`)
-
-    // client.channels.cache.get('981105473585549332').send({ embeds: [exampleEmbed] })
 });
 
 client.on('message', async(msg) => {
-    const message = msg.content;
-    const param = await axios.get('http://localhost:3000/lostark/api/info?nickname=' + encodeURI(message.split(" ")[1]));
-    const result = param.data;
-
-    if(message === "!help" || message === "!?") {
+    if(msg.content === "!help" || msg.content === "!?" && msg.content.split("\n").length == 1) {
         data = [];
 
         data.push(
@@ -63,8 +53,12 @@ client.on('message', async(msg) => {
         await msg.channel.send({ embeds: [exampleEmbed] })
     }
 
-    if(message.includes("!검색")) {
+    if((msg.content.split(" ")[0] === "!검색" || msg.content.split(" ")[0] === "!ㄳ" || msg.content.split(" ")[0] === "!ㄱㅅ") && msg.content.split("\n").length == 1) {
+        const message = msg.content;
+        const param = await axios.get('http://localhost:3000/lostark/api/info?nickname=' + encodeURI(message.split(" ")[1]));
+        const result = param.data;
         const data = [];
+
         if(result.nickname == ''){
             exampleEmbed.description = '캐릭터정보가 없습니다.';
             exampleEmbed.data = [];
@@ -108,8 +102,12 @@ client.on('message', async(msg) => {
 
         await msg.channel.send({ embeds: [exampleEmbed] })
     }
-    if(message.includes("!세부정보")) {
+    if((msg.content.split(" ")[0] === "!세부정보" || msg.content.split(" ")[0] === "!ㅅㅂㅈㅂ") && msg.content.split("\n").length == 1) {
+        const message = msg.content;
+        const param = await axios.get('http://localhost:3000/lostark/api/info?nickname=' + encodeURI(message.split(" ")[1]));
+        const result = param.data;
         const data = [];
+
         if(result.nickname == ''){
             exampleEmbed.description = '캐릭터정보가 없습니다.';
             exampleEmbed.data = [];
@@ -146,8 +144,12 @@ client.on('message', async(msg) => {
 
         await msg.channel.send({ embeds: [exampleEmbed] })
     }
-    if(message.includes("!보유캐릭터")) {
+    if((msg.content.split(" ")[0] === "!배럭" || msg.content.split(" ")[0] === "!ㅂㄹ") && msg.content.split("\n").length == 1) {
+        const message = msg.content;
+        const param = await axios.get('http://localhost:3000/lostark/api/info?nickname=' + encodeURI(message.split(" ")[1]));
+        const result = param.data;
         data = [];
+
         if(result.nickname == ''){
             exampleEmbed.description = '캐릭터정보가 없습니다.';
             exampleEmbed.data = [];
@@ -168,7 +170,10 @@ client.on('message', async(msg) => {
         await msg.channel.send({ embeds: [exampleEmbed] })
     }
 
-    if (message.includes("!보석")) {
+    if ((msg.content.split(" ")[0] === "!보석" || msg.content.split(" ")[0] === "!ㅄ" || msg.content.split(" ")[0] === "!ㅂㅅ") && msg.content.split("\n").length == 1) {
+        const message = msg.content;
+        const param = await axios.get('http://localhost:3000/lostark/api/info?nickname=' + encodeURI(message.split(" ")[1]));
+        const result = param.data;
         const data = [];
 
         if(result.nickname == ''){
