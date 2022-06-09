@@ -1,6 +1,8 @@
 const Discord = require('discord.js');
 const MessageEmbed = require('discord.js');
 const axios = require('axios');
+const web = require('./link/url_info');
+const dc = require('./discord/info');
 
 const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] })
 
@@ -28,6 +30,17 @@ const exampleEmbed = {
 
 client.on('ready', () => {
     console.log(`${client.user.tag}에 로그인하였습니다!`)
+
+    const status = "명령어 모음에 대해서 알고 싶다면 !? or !help를 쳐보세요. \n 문의 : 성수소년";
+
+    param = {
+        game : {
+            name : status
+        },
+        status: 'online'
+    }
+
+    client.user.setActivity(status)
 });
 
 client.on('message', async(msg) => {
@@ -36,10 +49,13 @@ client.on('message', async(msg) => {
 
         data.push(
             { name: '[명령어 모음]', value: '\u200B' },
-            { name: '!검색 {nickname}', value: '기본정보, 전투특성' },
-            { name: '!세부정보 {nickname}', value: '각인, 카드, 생활스킬(임시)'},
-            { name: '!보석 {nickname}', value: '전투스킬에 대한 보석'},
-            { name: '!보유캐릭터 {nickname}', value: '배럭캐릭터'},
+            { name: '!검색 or !ㄱㅅ or !ㄳ', value: '기본정보, 전투특성' },
+            { name: '!세부정보 or !ㅅㅂㅈㅂ', value: '각인, 카드, 생활스킬(임시)'},
+            { name: '!보석 or !쥬얼 or !ㅈㅇ', value: '전투스킬에 대한 보석'},
+            { name: '!배럭 or !ㅂㄹ', value: '배럭캐릭터'},
+            { name: '!내실 or !ㄴㅅ', value: '생활스킬, 수집품 정보'},
+
+            { name: 'ex) !ㄱㅅ 불주먹성수', value: '\u200B' },
         );
 
         if (msg.channel.id === "981105473585549332" || msg.channel.id === "981103805485703188" || msg.channel.id === "981223608728813668"){
@@ -55,7 +71,7 @@ client.on('message', async(msg) => {
 
     if((msg.content.split(" ")[0] === "!검색" || msg.content.split(" ")[0] === "!ㄳ" || msg.content.split(" ")[0] === "!ㄱㅅ") && msg.content.split("\n").length == 1) {
         const message = msg.content;
-        const param = await axios.get('http://localhost:3000/lostark/api/info?nickname=' + encodeURI(message.split(" ")[1]));
+        const param = await axios.get(web.url+'/api/info?nickname=' + encodeURI(message.split(" ")[1]));
         const result = param.data;
         const data = [];
 
@@ -104,7 +120,7 @@ client.on('message', async(msg) => {
     }
     if((msg.content.split(" ")[0] === "!세부정보" || msg.content.split(" ")[0] === "!ㅅㅂㅈㅂ") && msg.content.split("\n").length == 1) {
         const message = msg.content;
-        const param = await axios.get('http://localhost:3000/lostark/api/info?nickname=' + encodeURI(message.split(" ")[1]));
+        const param = await axios.get(web.url+'/api/info?nickname=' + encodeURI(message.split(" ")[1]));
         const result = param.data;
         const data = [];
 
@@ -125,13 +141,6 @@ client.on('message', async(msg) => {
             for(var j of result.card){
                 data.push({ name: j.card_name, value: j.card_stone_count + "각", inline: true })
             }
-            data.push(
-                { name: '\u200B', value: '\u200B' },
-                { name: '[생활스킬 정보]', value: '\u200B' },
-            )
-            for(var z of result.life){
-                data.push({ name:  z.life_name, value: z.life_level, inline: true})
-            }
         }
 
         if (msg.channel.id === "981105473585549332" || msg.channel.id === "981103805485703188" || msg.channel.id === "981223608728813668"){
@@ -146,7 +155,7 @@ client.on('message', async(msg) => {
     }
     if((msg.content.split(" ")[0] === "!배럭" || msg.content.split(" ")[0] === "!ㅂㄹ") && msg.content.split("\n").length == 1) {
         const message = msg.content;
-        const param = await axios.get('http://localhost:3000/lostark/api/info?nickname=' + encodeURI(message.split(" ")[1]));
+        const param = await axios.get(web.url+'/api/info?nickname=' + encodeURI(message.split(" ")[1]));
         const result = param.data;
         data = [];
 
@@ -160,8 +169,13 @@ client.on('message', async(msg) => {
         }
 
         if (msg.channel.id === "981105473585549332" || msg.channel.id === "981103805485703188" || msg.channel.id === "981223608728813668"){
-            exampleEmbed.description = '[' + result.nickname + ']님의 보유캐릭터입니다.';
-            exampleEmbed.fields = data;
+            if(result.expand.length == 0){
+                exampleEmbed.description = '[' + result.nickname + ']님의 보유하신 캐릭터가 없습니다.';
+                exampleEmbed.fields = [];
+            } else {
+                exampleEmbed.description = '[' + result.nickname + ']님의 보유캐릭터입니다.';
+                exampleEmbed.fields = data;
+            }
         } else {
             exampleEmbed.description = "전투정보실 채널에서 조회하세요!";
             exampleEmbed.fields = [];
@@ -170,9 +184,9 @@ client.on('message', async(msg) => {
         await msg.channel.send({ embeds: [exampleEmbed] })
     }
 
-    if ((msg.content.split(" ")[0] === "!보석" || msg.content.split(" ")[0] === "!ㅄ" || msg.content.split(" ")[0] === "!ㅂㅅ") && msg.content.split("\n").length == 1) {
+    if ((msg.content.split(" ")[0] === "!보석" || msg.content.split(" ")[0] === "!쥬얼" || msg.content.split(" ")[0] === "!ㅈㅇ") && msg.content.split("\n").length == 1) {
         const message = msg.content;
-        const param = await axios.get('http://localhost:3000/lostark/api/info?nickname=' + encodeURI(message.split(" ")[1]));
+        const param = await axios.get(web.url+'/api/info?nickname=' + encodeURI(message.split(" ")[1]));
         const result = param.data;
         const data = [];
 
@@ -187,7 +201,55 @@ client.on('message', async(msg) => {
         }
 
         if (msg.channel.id === "981105473585549332" || msg.channel.id === "981103805485703188" || msg.channel.id === "981223608728813668"){
-            exampleEmbed.description = '[' + result.nickname + ']님이 보유하신 보석입니다.';
+            if(result.jewel.length == 0) {
+                exampleEmbed.description = '[' + result.nickname + ']님이 보유하신 보석이 없습니다.';
+                exampleEmbed.fields = []
+            } else {
+                exampleEmbed.description = '[' + result.nickname + ']님이 보유하신 보석입니다.';
+                exampleEmbed.fields = data;
+            }
+        } else {
+            exampleEmbed.description = "전투정보실 채널에서 조회하세요!";
+            exampleEmbed.fields = [];
+        }
+
+        await msg.channel.send({ embeds: [exampleEmbed] })
+    }
+
+    if ((msg.content.split(" ")[0] === "!내실" || msg.content.split(" ")[0] === "!ㄴㅅ") && msg.content.split("\n").length == 1) {
+        const message = msg.content;
+        const param = await axios.get(web.url+'/api/info?nickname=' + encodeURI(message.split(" ")[1]));
+        const collection1 = await axios.get(web.url+'/api/internal_stability?nickname=' + encodeURI(message.split(" ")[1]));
+
+        const result = param.data;
+        const collection = collection1.data;
+        const data = [];
+
+        if(result.nickname == ''){
+            exampleEmbed.description = '캐릭터정보가 없습니다.';
+            exampleEmbed.data = [];
+        } else {
+            // 생활 스킬
+            data.push(
+                { name: '\u200B', value: '\u200B' },
+                { name: '[생활스킬 정보]', value: '\u200B' },
+            )
+            for(var z of result.life){
+                data.push({ name:  z.life_name, value: z.life_level, inline: true})
+            }
+
+            // 내실
+            data.push(
+                { name: '\u200B', value: '\u200B' },
+                { name: '[내실 정보]', value: '\u200B' },
+            )
+            for(var j of collection.collection){
+                data.push({ name:  j.collection_name, value: j.collection_count + "개", inline: true})
+            }
+        }
+
+        if (msg.channel.id === "981105473585549332" || msg.channel.id === "981103805485703188" || msg.channel.id === "981223608728813668"){
+            exampleEmbed.description = '[' + result.nickname + ']님이 가지고 있는 내실 정보입니다.';
             exampleEmbed.fields = data;
         } else {
             exampleEmbed.description = "전투정보실 채널에서 조회하세요!";
@@ -198,4 +260,4 @@ client.on('message', async(msg) => {
     }
 });
 
-client.login('OTgwNzg2NjQ1OTM2NzgzNDAw.GBrZ6s.I5fSGEhhioQZsD-7ePohjfMD2fejz0LuRSr24Y');
+client.login(dc.sess);
