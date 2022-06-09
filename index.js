@@ -54,6 +54,7 @@ client.on('message', async(msg) => {
             { name: '!보석 or !쥬얼 or !ㅈㅇ', value: '전투스킬에 대한 보석'},
             { name: '!배럭 or !ㅂㄹ', value: '배럭캐릭터'},
             { name: '!내실 or !ㄴㅅ', value: '생활스킬, 수집품 정보'},
+            { name: '!거래가 각인 or !ㄱㄹㄱ 각인', value: '최근 거래가 가격 정보'},
 
             { name: 'ex) !ㄱㅅ 불주먹성수', value: '\u200B' },
         );
@@ -183,7 +184,6 @@ client.on('message', async(msg) => {
 
         await msg.channel.send({ embeds: [exampleEmbed] })
     }
-
     if ((msg.content.split(" ")[0] === "!보석" || msg.content.split(" ")[0] === "!쥬얼" || msg.content.split(" ")[0] === "!ㅈㅇ") && msg.content.split("\n").length == 1) {
         const message = msg.content;
         const param = await axios.get(web.url+'/api/info?nickname=' + encodeURI(message.split(" ")[1]));
@@ -215,7 +215,6 @@ client.on('message', async(msg) => {
 
         await msg.channel.send({ embeds: [exampleEmbed] })
     }
-
     if ((msg.content.split(" ")[0] === "!내실" || msg.content.split(" ")[0] === "!ㄴㅅ") && msg.content.split("\n").length == 1) {
         const message = msg.content;
         const param = await axios.get(web.url+'/api/info?nickname=' + encodeURI(message.split(" ")[1]));
@@ -254,6 +253,44 @@ client.on('message', async(msg) => {
         } else {
             exampleEmbed.description = "전투정보실 채널에서 조회하세요!";
             exampleEmbed.fields = [];
+        }
+
+        await msg.channel.send({ embeds: [exampleEmbed] })
+    }
+    if((msg.content.split(" ")[0] === "!거래가" || msg.content.split(" ")[0] === "!ㄱㄹㄱ") && msg.content.split("\n").length == 1) {
+        let param = ""
+        let result = ""
+        let flag = false
+        const data = [];
+
+        if(msg.content.split(" ")[1] === "각인") {
+            if(msg.channel.id === "981105473585549332" || msg.channel.id === "981103805485703188" || msg.channel.id === "981223608728813668"){
+                await msg.channel.send("약 10 ~ 15초 정도 기다리셔야합니다..")
+
+                param = await axios.get(web.url+'/api/store/imprint');
+                result = param.data;
+
+                data.push(
+                    { name: '[최근 거래가]', value: '\u200B' },
+                )
+                for(var i of result){
+                    data.push({ name: i.store_name, value: i.store_price, inline: true })
+                }
+
+                exampleEmbed.description = "각인에 대한 최근 거래가입니다.";
+                exampleEmbed.fields = data
+            } else {
+                exampleEmbed.description = "전투정보실 채널에서 조회하세요!";
+                exampleEmbed.fields = [];
+            }
+        } else {
+            if(msg.channel.id === "981105473585549332" || msg.channel.id === "981103805485703188" || msg.channel.id === "981223608728813668"){
+                exampleEmbed.description = "명령어를 잘못 입력하셨습니다.";
+                exampleEmbed.fields = [];
+            } else {
+                exampleEmbed.description = "전투정보실 채널에서 조회하세요!";
+                exampleEmbed.fields = [];
+            }
         }
 
         await msg.channel.send({ embeds: [exampleEmbed] })

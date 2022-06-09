@@ -1,5 +1,5 @@
 var discord = {
-    sess: "OTgwNzg2NjQ1OTM2NzgzNDAw.GBrZ6s.I5fSGEhhioQZsD-7ePohjfMD2fejz0LuRSr24Y"
+    sess: "OTg0Mzk4NTI3OTg5OTUyNTMy.Gl_VlH.cD2xWh2HFU3hJsNejc7Kx2Q2ahOv_jqVPE14qI"
 }
 
 module.exports = discord;
