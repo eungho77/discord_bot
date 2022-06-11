@@ -1,6 +1,6 @@
 {
   "token" : "토근번호 입력",
   "url": "http://localhost:3000",
-  "clientId": "985117554307637308",
-  "guildId": "980788300983976007"
+  "clientId": "Client Id",
+  "guildId": "채널 ID"
 }
