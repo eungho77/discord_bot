@@ -1,3 +1,5 @@
+const axios = require('axios')
+
 const order = {
     help: function() {
         const data = [];
@@ -5,7 +7,7 @@ const order = {
         data.push(
             { name: '[명령어 모음]', value: '\u200B' },
             { name: '!검색 or !ㄱㅅ or !ㄳ', value: '기본정보, 전투특성' },
-            { name: '!세부정보 or !ㅅㅂㅈㅂ', value: '각인, 카드, 생활스킬(임시)'},
+            { name: '!인포 or !ㅇㅍ', value: '각인, 카드'},
             { name: '!보석 or !쥬얼 or !ㅈㅇ', value: '전투스킬에 대한 보석'},
             { name: '!배럭 or !ㅂㄹ', value: '배럭캐릭터'},
             { name: '!내실 or !ㄴㅅ', value: '생활스킬, 수집품 정보'},
@@ -143,7 +145,6 @@ const order = {
 
     today: function(param) {
         const data = [];
-
         var count = 1;
 
         // 도전 가디언 토벌
@@ -151,6 +152,44 @@ const order = {
             data.push({ name: count + ". " + z.name, value: z.time, inline: true})
             count = count + 1;
         }
+
+        return data
+    },
+    
+    shop: async (param) => {
+        let result = param.items
+
+        let data = [];
+        var count = 1
+
+        let shop_result = '';
+
+        if(Array.isArray(result)){
+            if(param.mode === "Success"){
+                for(z of result){
+                    data.push({ name: "item " + count + "번째" , value: z})
+                    count = count + 1
+                }
+                data.push({ name: "명령어 사용법", value: "위에 있는 아이템 항목들 " + (count-1) + "건 검색이 되었습니다. \n 명령어 사용하기 위해 위에 있는 아이템을 확인하셔서 '!상점 {정확한 아이템 명}'을 입력해주시기 바랍니다. \n ex) !상점 " + result[0]})
+            }
+        } else {
+            if(param.mode === "Success") {
+                shop_result = await axios.get("http://152.70.248.4:5000/trade/" + result.replace(/[^0-9]/g, ""))
+                if(shop_result.data.Result === "Success") {
+                    for(i of shop_result.data.Pricechart) {
+                        data.push({ name: shop_result.data.Name, value: "개수 > " + i.Amount + "\n골드 > " + i.Price})
+                    }
+                }
+            }
+            if(param.mode === "Failed") {
+                data.push({ name: 'error', value: result })
+            }
+        }
+
+        data.push({ name: '\u200B', value: "\u200B" })
+        data.push({ name: '출처', value: "개발자 : 모코코더" })
+
+        console.log(data)
 
         return data
     }

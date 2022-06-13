@@ -76,7 +76,7 @@ client.on('message', async(msg) => {
 
         await msg.channel.send({ embeds: [exampleEmbed] })
     }
-    if((msg.content.split(" ")[0] === "!세부정보" || msg.content.split(" ")[0] === "!ㅅㅂㅈㅂ") && msg.content.split("\n").length == 1) {
+    if((msg.content.split(" ")[0] === "!인포" || msg.content.split(" ")[0] === "!ㅇㅍ") && msg.content.split("\n").length == 1) {
         exampleEmbed.title = '각인 / 카드 안내'
         const message = msg.content
         let info;
@@ -199,6 +199,28 @@ client.on('message', async(msg) => {
             exampleEmbed.description = "전투정보실 채널에서 조회하세요!";
             exampleEmbed.fields = [];
         }
+
+        await msg.channel.send({ embeds: [exampleEmbed] })
+    }
+    if ((msg.content.split(" ")[0] === "!상점" || msg.content.split(" ")[0] === "!ㅅㅈ") && msg.content.split("\n").length == 1) {
+        exampleEmbed.title = '로스트아크 상점가'
+        const message = msg.content;
+        // if(message.split(" ")[1] != null){
+            if (msg.channel.id === "981105473585549332" || msg.channel.id === "981103805485703188" || msg.channel.id === "981223608728813668"){
+                const item = message.split("!상점")[1].trim()
+
+                const result = await axios.get(url+'/api/shop/search?items='+encodeURI(item));
+                const param = result.data;
+                
+                exampleEmbed.description = '';
+                exampleEmbed.fields = await order.shop(param);
+            } else {
+                // exampleEmbed.description = "전투정보실 채널에서 조회하세요!";
+                // exampleEmbed.fields = [];
+            }
+        // }
+
+        // console.log(exampleEmbed)
 
         await msg.channel.send({ embeds: [exampleEmbed] })
     }
