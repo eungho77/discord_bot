@@ -29,7 +29,7 @@ const exampleEmbed = {
 client.on('ready', () => {
     console.log(`${client.user.tag}에 로그인하였습니다!`)
 
-    const status = "명령어 모음에 대해서 알고 싶다면 /? or /help를 쳐보세요. \n 문의 : 성수소년";
+    const status = "명령어 모음에 대해서 알고 싶다면 !? or !help를 쳐보세요. \n 문의 : 성수소년";
 
     param = {
         game : {
@@ -61,11 +61,16 @@ client.on('message', async(msg) => {
         if(message.split(" ")[1].length >= 1) {
             if (msg.channel.id === "981105473585549332" || msg.channel.id === "981103805485703188" || msg.channel.id === "981223608728813668"){
                 info = await axios.get(url+'/api/info?nickname=' + encodeURI(message.split(" ")[1]))
-                if(info.data.nickname != null) {
+                if(info.data.nickname != null && info.data.mode) {
                     exampleEmbed.description = '[' + info.data.nickname + ']님이 가지고 있는 기본 정보입니다.'
                     exampleEmbed.fields = order.search(info.data)
                 } else {
                     exampleEmbed.description = '캐릭터 정보가 없습니다.'
+                    exampleEmbed.fields = order.search(info.data)
+                }
+
+                if(!info.data.mode) {
+                    exampleEmbed.description = info.data.title
                     exampleEmbed.fields = []
                 }
             } else {
@@ -205,22 +210,16 @@ client.on('message', async(msg) => {
     if ((msg.content.split(" ")[0] === "!상점" || msg.content.split(" ")[0] === "!ㅅㅈ") && msg.content.split("\n").length == 1) {
         exampleEmbed.title = '로스트아크 상점가'
         const message = msg.content;
-        // if(message.split(" ")[1] != null){
-            if (msg.channel.id === "981105473585549332" || msg.channel.id === "981103805485703188" || msg.channel.id === "981223608728813668"){
-                const item = message.split("!상점")[1].trim()
+        if (msg.channel.id === "981105473585549332" || msg.channel.id === "981103805485703188" || msg.channel.id === "981223608728813668"){
+            const result = await axios.get(url+'/api/shop/search?items='+encodeURI(message.substring(4).trim()));
+            const param = result.data;
 
-                const result = await axios.get(url+'/api/shop/search?items='+encodeURI(item));
-                const param = result.data;
-                
-                exampleEmbed.description = '';
-                exampleEmbed.fields = await order.shop(param);
-            } else {
-                // exampleEmbed.description = "전투정보실 채널에서 조회하세요!";
-                // exampleEmbed.fields = [];
-            }
-        // }
-
-        // console.log(exampleEmbed)
+            exampleEmbed.description = '';
+            exampleEmbed.fields = await order.shop(param);
+        } else {
+            exampleEmbed.description = "전투정보실 채널에서 조회하세요!";
+            exampleEmbed.fields = [];
+        }
 
         await msg.channel.send({ embeds: [exampleEmbed] })
     }
