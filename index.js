@@ -1,4 +1,5 @@
 const Discord = require('discord.js')
+
 const fs = require('node:fs')
 const loa_commands1 = require('./commands/loa_commands1')
 const loa_commands2 = require('./commands/loa_commands2')
@@ -52,7 +53,7 @@ client.on('ready', () => {
 });
 
 // { / } 명령어 이용시
-client.on('interactionCreate', async(interaction, message) => {
+client.on('interactionCreate', async(interaction) => {
     if (!interaction.isCommand()) return
 
     if (interaction.commandName === 'help') {
@@ -88,47 +89,65 @@ client.on('interactionCreate', async(interaction, message) => {
     }
     if (interaction.commandName === "상점") {
         result = await loa_commands1.loa_shop(interaction, url)
+
+        if(result.row != null) {
+            await interaction.reply({ embeds: [result.exampleEmbed], components: [result.row] })
+        } else {
+            await interaction.reply({ embeds: [result.exampleEmbed] })
+        }
+    }
+    if (interaction.commandName === "마리샵") {
+        result = await loa_commands1.loa_shop_mari(interaction, url)
         await interaction.reply({ embeds: [result] })
     }
 })
 
 // { ! } 명령어 이용시
 client.on('message', async(msg) => {
-    if(msg.content === "!help" || msg.content === "!?" && msg.content.split("\n").length == 1) {
+    if(msg.content === "!help" || msg.content === "!?") {
         result = await loa_commands2.help(msg, url)
         await msg.channel.send({ embeds: [result] })
     }
-    if((msg.content.split(" ")[0] === "!검색" || msg.content.split(" ")[0] === "!ㄳ" || msg.content.split(" ")[0] === "!ㄱㅅ") && msg.content.split("\n").length == 1) {
+    if((msg.content.split(" ")[0] === "!검색" || msg.content.split(" ")[0] === "!ㄳ" || msg.content.split(" ")[0] === "!ㄱㅅ") && msg.content.split(" ")[1] != null) {
         result = await loa_commands2.character_search(msg, url)
         await msg.channel.send({ embeds: [result] })
     }
-    if((msg.content.split(" ")[0] === "!인포" || msg.content.split(" ")[0] === "!ㅇㅍ") && msg.content.split("\n").length == 1) {
+    if((msg.content.split(" ")[0] === "!인포" || msg.content.split(" ")[0] === "!ㅇㅍ") && msg.content.split(" ")[1] != null) {
         result = await loa_commands2.character_info(msg, url)
         await msg.channel.send({ embeds: [result] })
     }
-    if((msg.content.split(" ")[0] === "!배럭" || msg.content.split(" ")[0] === "!ㅂㄹ") && msg.content.split("\n").length == 1) {
+    if((msg.content.split(" ")[0] === "!배럭" || msg.content.split(" ")[0] === "!ㅂㄹ") && msg.content.split(" ")[1] != null) {
         result = await loa_commands2.character_barracks(msg, url)
         await msg.channel.send({ embeds: [result] })
     }
-    if ((msg.content.split(" ")[0] === "!보석" || msg.content.split(" ")[0] === "!쥬얼" || msg.content.split(" ")[0] === "!ㅈㅇ") && msg.content.split("\n").length == 1) {
+    if ((msg.content.split(" ")[0] === "!보석" || msg.content.split(" ")[0] === "!쥬얼" || msg.content.split(" ")[0] === "!ㅈㅇ") && msg.content.split(" ")[1].length >= 1) {
         result = await loa_commands2.character_jewel(msg, url)
         await msg.channel.send({ embeds: [result] })
     }
-    if ((msg.content.split(" ")[0] === "!내실" || msg.content.split(" ")[0] === "!ㄴㅅ") && msg.content.split("\n").length == 1) {
+    if ((msg.content.split(" ")[0] === "!내실" || msg.content.split(" ")[0] === "!ㄴㅅ") && msg.content.split(" ")[1] != null) {
         result = await loa_commands2.character_life(msg, url)
         await msg.channel.send({ embeds: [result] })
     }
-    if ((msg.content.split(" ")[0] === "!도전" || msg.content.split(" ")[0] === "!ㄷㅈ") && msg.content.split("\n").length == 1) {
+    if ((msg.content.split(" ")[0] === "!도전" || msg.content.split(" ")[0] === "!ㄷㅈ")) {
         result = await loa_commands2.loa_challenge(msg, url)
         await msg.channel.send({ embeds: [result] })
     }
-    if ((msg.content.split(" ")[0] === "!스케줄" || msg.content.split(" ")[0] === "!ㅅㅋㅈ") && msg.content.split("\n").length == 1) {
+    if ((msg.content.split(" ")[0] === "!스케줄" || msg.content.split(" ")[0] === "!ㅅㅋㅈ")) {
         result = await loa_commands2.loa_totay(msg, url)
         await msg.channel.send({ embeds: [result] })
     }
-    if ((msg.content.split(" ")[0] === "!상점" || msg.content.split(" ")[0] === "!ㅅㅈ") && msg.content.split("\n").length == 1) {
-        result = await loa_commands2.loa_shop(msg, url)
-        await msg.channel.send({ embeds: [result] })
+    if ((msg.content.split(" ")[0] === "!상점" || msg.content.split(" ")[0] === "!ㅅㅈ") && msg.content.substring(4).length != 0) {
+        // result = await loa_commands2.loa_shop(msg, url)
+        await msg.channel.send("해당 명령어는 폐기했습니다. '/상점'을 이용해주시길 바랍니다.")
+    }
+});
+
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isSelectMenu()) return;
+
+    if(interaction.customId === 'items') {
+        result = await loa_commands1.loa_shop(interaction, url)
+        await interaction.update({ embeds: [result.exampleEmbed] })
     }
 });
 

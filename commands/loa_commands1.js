@@ -154,13 +154,52 @@ const discord = {
         return exampleEmbed
     },
     loa_shop: async (interaction, url) => {
+        const shop_param = "";
+        let items_name = "";
+
+        if(interaction.commandName === "상점") {
+            items_name = interaction.options.getString('아이템')
+        }
+
+        if(interaction.customId === 'items'){
+            items_name = interaction.values[0]
+        }
+
         exampleEmbed.title = '로스트아크 상점가'
         if (interaction.channelId === channelsId){
-            const result = await axios.get(url+'/api/shop/search?items='+encodeURI(interaction.options.getString('아이템')));
+            const result = await axios.get(url+'/api/shop/search?items='+encodeURI(items_name));
+            const param = result.data;
+            const shop_param = await order.shop1(param);
+
+            exampleEmbed.description = "아이템 명 : [" + items_name + "]" ;
+            exampleEmbed.fields = shop_param.data;
+
+            final_result = {
+                row: shop_param.row,
+                exampleEmbed: exampleEmbed
+            }
+        } else {
+            exampleEmbed.description = "전투정보실 채널에서 조회하세요!";
+            exampleEmbed.fields = [];
+
+            final_result = {
+                exampleEmbed: exampleEmbed
+            }
+        }
+
+        return final_result
+    },
+    loa_shop_mari: async (interaction, url) => {
+        const shop_param = "";
+        let items_name = "";
+
+        exampleEmbed.title = '로스트아크 마리샵'
+        if (interaction.channelId === channelsId){
+            const result = await axios.get(url+'/api/shop/mari');
             const param = result.data;
 
-            exampleEmbed.description = '';
-            exampleEmbed.fields = await order.shop(param);
+            exampleEmbed.description = "" ;
+            exampleEmbed.fields = await order.shop_mari(param);
         } else {
             exampleEmbed.description = "전투정보실 채널에서 조회하세요!";
             exampleEmbed.fields = [];
@@ -168,6 +207,7 @@ const discord = {
 
         return exampleEmbed
     }
+    
 }
 
 module.exports = discord

@@ -1,4 +1,5 @@
 const axios = require('axios')
+const { MessageActionRow, MessageSelectMenu } = require('discord.js');
 
 const order = {
     help: function() {
@@ -158,10 +159,12 @@ const order = {
         return data
     },
     
-    shop: async (param) => {
+    shop1: async (param) => {
         let result = param.items
 
         let data = [];
+        let row_data = [];
+
         var count = 1
 
         let shop_result = '';
@@ -169,29 +172,67 @@ const order = {
         if(Array.isArray(result)){
             if(param.mode === "Success"){
                 for(z of result){
-                    data.push({ name: "item " + count + "번째" , value: z})
-                    count = count + 1
+                    row_data.push({label: z, description: '', value: z})
                 }
-                data.push({ name: "명령어 사용법", value: "위에 있는 아이템 항목들 " + (count-1) + "건 검색이 되었습니다. \n 명령어 사용하기 위해 위에 있는 아이템을 확인하셔서 '!상점 {정확한 아이템 명}'을 입력해주시기 바랍니다. \n ex) !상점 " + result[0]})
+                data.push({ name: "아래 항목을 클릭하여 선택하세요.", value: "아래 항목을 클릭하여 선택을 하시면 자동으로 검색이 됩니다.", inline: true})
+            }
+
+            const row = new MessageActionRow()
+                .addComponents(
+                    new MessageSelectMenu()
+                        .setCustomId('items')
+                        .setPlaceholder('아이템을 선택하세요.')
+                        .addOptions(row_data),
+                )
+
+            data.push({ name: '\u200B', value: "\u200B" })
+            data.push({ name: '출처', value: "개발자 : 모코코더" })
+            
+            init = {
+                row: row,
+                data: data
             }
         } else {
             if(param.mode === "Success") {
                 shop_result = await axios.get("http://152.70.248.4:5000/trade/" + result.replace(/[^0-9]/g, ""))
                 if(shop_result.data.Result === "Success") {
+                    let count = 1;
                     for(i of shop_result.data.Pricechart) {
-                        data.push({ name: shop_result.data.Name, value: "개수 > " + i.Amount + "\n골드 > " + i.Price})
+                        data.push({ name: "No. " + count++, value: "개수 > " + i.Amount + "\n골드 > " + i.Price})
                     }
+                }
+                init = {
+                    item_name: shop_result.data.Name,
+                    data: data
                 }
             }
             if(param.mode === "Failed") {
                 data.push({ name: 'error', value: result })
             }
+
+            data.push({ name: '\u200B', value: "\u200B" })
+            data.push({ name: '출처', value: "개발자 : 모코코더" })
+            
+            init = {
+                data: data
+            }
         }
 
-        data.push({ name: '\u200B', value: "\u200B" })
-        data.push({ name: '출처', value: "개발자 : 모코코더" })
+        return init
+    },
+    shop_mari: function(param) {
+        const data = [];
+        let count = 1;
 
-        console.log(data)
+        for(let a of param) {
+            if(a.mode)
+                count = 1
+                data.push({ name: a.type, value: "\u200B"})
+                for(let b of a.mari_list) {
+                    data.push({ name: "No. " + count++, value: ((b.popularity == "인기") ? "[" + b.popularity + "] " : "") + b.item + "\n크리스탈 > " + b.amount, inline: true})
+                }
+                data.push({ name: "\u200B", value: "\u200B"})
+            }
 
         return data
     }

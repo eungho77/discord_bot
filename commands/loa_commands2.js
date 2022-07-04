@@ -153,21 +153,21 @@ const discord = {
 
         return exampleEmbed
     },
-    loa_shop: async (msg, url) => {
-        exampleEmbed.title = '로스트아크 상점가'
-        if (msg.channelId === channelsId){
-            const result = await axios.get(url+'/api/shop/search?items='+ encodeURI(msg.content.substring(4)));
-            const param = result.data;
-
-            exampleEmbed.description = '';
-            exampleEmbed.fields = await order.shop(param);
-        } else {
-            exampleEmbed.description = "전투정보실 채널에서 조회하세요!";
-            exampleEmbed.fields = [];
-        }
-
-        return exampleEmbed
-    }
+    // loa_shop: async (msg, url) => {
+    //     exampleEmbed.title = '로스트아크 상점가'
+    //     if (msg.channelId === channelsId){
+    //         const result = await axios.get(url+'/api/shop/search?items='+ encodeURI(msg.content.substring(4)));
+    //         const param = result.data;
+    //
+    //         exampleEmbed.description = "아이템 명 : [" + msg.content.substring(4) + "]" ;
+    //         exampleEmbed.fields = await order.shop2(param);
+    //     } else {
+    //         exampleEmbed.description = "전투정보실 채널에서 조회하세요!";
+    //         exampleEmbed.fields = [];
+    //     }
+    //
+    //     return exampleEmbed
+    // }
 }
 
 module.exports = discord
