@@ -52,9 +52,10 @@ const discord = {
         return result
     },
     character_search1: async (interaction, url) => {
+        console.log(interaction.options.getString("검색"))
         exampleEmbed.title = '정보 / 기본, 전투 특성'
         if (interaction.channelId === channelsId){
-            let info = await axios.get(url+'/api/info?nickname=' + encodeURI(interaction.options.getString("검색")))
+            let info = await axios.get(url+'/api/info?nickname=' + encodeURI(interaction.options.getString("닉네임")))
             if(info.data.nickname != null && info.data.mode) {
                 exampleEmbed.description = '[' + info.data.nickname + ']님이 가지고 있는 기본 정보입니다.'
                 exampleEmbed.fields = order.search(info.data)
