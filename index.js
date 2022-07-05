@@ -1,8 +1,9 @@
 const Discord = require('discord.js')
-
 const fs = require('node:fs')
+
 const loa_commands1 = require('./commands/loa_commands1')
 const loa_commands2 = require('./commands/loa_commands2')
+const selectData = require('./commands/selectBox/selectBox')
 
 const { REST } = require ('@discordjs/rest')
 const { Routes } = require('discord-api-types/v9')
@@ -19,6 +20,7 @@ for (const file of commandFiles) {
 
 
 const rest = new REST({version: '9'}).setToken(token)
+let shop = "";
 
 client.on('ready', () => {
     (async () => {
@@ -60,24 +62,22 @@ client.on('interactionCreate', async(interaction) => {
         await interaction.reply({embeds: [loa_commands1.help(interaction)]})
     }
     if (interaction.commandName === '검색') {
-        result = await loa_commands1.character_search(interaction, url)
-        await interaction.reply({embeds: [result]})
+        if (interaction.commandName === '검색') {
+            result = await loa_commands1.character_search1(interaction, url)
+            await interaction.reply({embeds: [result], components: [selectData.character_search(interaction.options.getString('닉네임'))]})
+        }
     }
     if(interaction.commandName === "인포") {
-        result = await loa_commands1.character_info(interaction, url)
-        await interaction.reply({ embeds: [result] })
+        await interaction.reply({ content: "해당 명령어는 /검색으로 통합시켰습니다. /검색 {닉네임} 입력하신 후 선택박스에서 선택해보세요." })
     }
     if(interaction.commandName === "배럭") {
-        result = await loa_commands1.character_barracks(interaction, url)
-        await interaction.reply({ embeds: [result] })
+        await interaction.reply({ content: "해당 명령어는 /검색으로 통합시켰습니다. /검색 {닉네임} 입력하신 후 선택박스에서 선택해보세요." })
     }
     if (interaction.commandName === "보석") {
-        result = await loa_commands1.character_jewel(interaction, url)
-        await interaction.reply({ embeds: [result] })
+        await interaction.reply({ content: "해당 명령어는 /검색으로 통합시켰습니다. /검색 {닉네임} 입력하신 후 선택박스에서 선택해보세요." })
     }
     if (interaction.commandName === "내실") {
-        result = await loa_commands1.character_life(interaction, url)
-        await interaction.editReply({ embeds: [result] })
+        await interaction.editReply({ content: "해당 명령어는 /검색으로 통합시켰습니다. /검색 {닉네임} 입력하신 후 선택박스에서 선택해보세요." })
     }
     if (interaction.commandName === "도전") {
         result = await loa_commands1.loa_challenge(interaction, url)
@@ -88,12 +88,13 @@ client.on('interactionCreate', async(interaction) => {
         await interaction.reply({ embeds: [result] })
     }
     if (interaction.commandName === "상점") {
-        result = await loa_commands1.loa_shop(interaction, url)
+        await interaction.deferReply();
+        shop = await loa_commands1.loa_shop(interaction, url)
 
-        if(result.row != null) {
-            await interaction.reply({ embeds: [result.exampleEmbed], components: [result.row] })
+        if(shop.row != null) {
+            await interaction.followUp({ embeds: [shop.exampleEmbed], components: [shop.row] })
         } else {
-            await interaction.reply({ embeds: [result.exampleEmbed] })
+            await interaction.followUp({ embeds: [shop.exampleEmbed] })
         }
     }
     if (interaction.commandName === "마리샵") {
@@ -145,9 +146,16 @@ client.on('message', async(msg) => {
 client.on('interactionCreate', async interaction => {
     if (!interaction.isSelectMenu()) return;
 
+    if(interaction.customId === 'search') {
+        await interaction.deferReply();
+        result = await loa_commands1.select_item(interaction, url)
+        await interaction.followUp({ embeds: [result], components: [selectData.character_search(interaction.values[0].split(":")[1])]})
+    }
+
     if(interaction.customId === 'items') {
+        await interaction.deferReply();
         result = await loa_commands1.loa_shop(interaction, url)
-        await interaction.update({ embeds: [result.exampleEmbed] })
+        await interaction.followUp({ embeds: [result.exampleEmbed], components: [shop.row] })
     }
 });
 
