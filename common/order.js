@@ -8,10 +8,6 @@ const order = {
         data.push(
             { name: '[명령어 모음]', value: '\u200B' },
             { name: '/검색 {캐릭터 닉네임}', value: '기본정보, 전투특성' },
-            { name: '/인포 {캐릭터 닉네임}', value: '각인, 카드'},
-            { name: '/보석 {캐릭터 닉네임}', value: '전투스킬에 대한 보석'},
-            { name: '/배럭 {캐릭터 닉네임}', value: '배럭캐릭터'},
-            { name: '/내실 {캐릭터 닉네임}', value: '생활스킬, 수집품 정보'},
             { name: '/도전', value: '도전 가디언 토벌, 도전 어비스 던전'},
             { name: '/스케줄', value: '로스트아크 스케줄'},
             { name: '/상점 {아이템 명}', value: '로스트아크 거래소'},
@@ -22,7 +18,7 @@ const order = {
 
     info: function(result) {
         const data = [];
-
+        
         data.push({name: '[각인 정보]', value: '\u200B'})
         for (var i of result.engrave) {
             data.push({name: i.name + "/" + i.level, value: i.text, inline: true})
@@ -42,35 +38,38 @@ const order = {
         const data = [];
 
         if(result.mode) {
-            // 기본 정보
-            data.push(
-                { name: '[기본 정보]', value: '\u200B' },
-                { name: '닉네임', value: result.nickname, inline: true },
-                { name: '서버', value: result.server, inline: true},
-                { name: '직업', value: result.job, inline: true },
-                { name: '원정대 레벨', value: "Lv. " + result.expedition, inline: true },
-                { name: '레벨', value: result.level, inline: true },
-                { name: '아이템 레벨', value: result.itemLevel, inline: true },
-            );
-            // 기본 특성
-            data.push(
-                { name: '\u200B', value: '\u200B' },
-                { name: '[기본 특성]', value: '\u200B' },
-                { name: '공격력', value: result.basic.attack, inline: true },
-                { name: '최대생명력', value: result.basic.hp, inline: true},
-            )
+            if(result.search){
+                // 기본 정보
+                data.push(
+                    { name: '[기본 정보]', value: '\u200B' },
+                    { name: '닉네임', value: result.nickname, inline: true },
+                    { name: '서버', value: result.server, inline: true},
+                    { name: '직업', value: result.job, inline: true },
+                    { name: '원정대 레벨', value: "Lv. " + result.expedition, inline: true },
+                    { name: '레벨', value: result.level, inline: true },
+                    { name: '아이템 레벨', value: result.itemLevel, inline: true },
+                );
+                // 기본 특성
+                data.push(
+                    { name: '\u200B', value: '\u200B' },
+                    { name: '[기본 특성]', value: '\u200B' },
+                    { name: '공격력', value: result.basic.attack, inline: true },
+                    { name: '최대생명력', value: result.basic.hp, inline: true},
+                )
 
-            // 전투 특성
-            data.push(
-                { name: '\u200B', value: '\u200B' },
-                { name: '[전투 특성]', value: '\u200B' },
-            )
-            for(var x of result.battle){
-                data.push({ name: x.name, value: x.number, inline: true })
+                // 전투 특성
+                data.push(
+                    { name: '\u200B', value: '\u200B' },
+                    { name: '[전투 특성]', value: '\u200B' },
+                )
+                for(var x of result.battle){
+                    data.push({ name: x.name, value: x.number, inline: true })
+                }
+            } else {
+                data.push({ name: '\u200B', value: result.content, inline: true })
             }
-        } else {
-            data.push({ name: result.title, value: '\u200B' })
         }
+
         return data
     },
 
@@ -121,7 +120,6 @@ const order = {
 
     challenge: function(param) {
         const data = []
-
         var count = 1;
 
         // 도전 가디언 토벌

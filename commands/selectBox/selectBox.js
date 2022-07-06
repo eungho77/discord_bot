@@ -6,6 +6,7 @@ const selectData = {
         let count = 1;
 
         for(let a of selectBox) {
+            a.description = "[" + nickname + "] 님의 " + a.description
             a.value = (count++) + ":" + nickname
         }
 

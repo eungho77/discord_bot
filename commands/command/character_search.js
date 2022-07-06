@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const discord = {
     data: new SlashCommandBuilder()
         .setName('검색')
-        .setDescription('기본정보, 전투특성')
+        .setDescription('기본적으로 캐릭터 검색을 하고 선택항목에 따라 정보를 볼 수 있습니다.')
         .addStringOption(option =>
             option
                 .setName('닉네임')

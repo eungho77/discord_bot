@@ -18,7 +18,6 @@ for (const file of commandFiles) {
     commands.push(command.data.toJSON())
 }
 
-
 const rest = new REST({version: '9'}).setToken(token)
 let shop = "";
 
@@ -62,22 +61,17 @@ client.on('interactionCreate', async(interaction) => {
         await interaction.reply({embeds: [loa_commands1.help(interaction)]})
     }
     if (interaction.commandName === '검색') {
-        if (interaction.commandName === '검색') {
-            result = await loa_commands1.character_search1(interaction, url)
-            await interaction.reply({embeds: [result], components: [selectData.character_search(interaction.options.getString('닉네임'))]})
+        await interaction.deferReply();
+        result = await loa_commands1.character_search(interaction, url, interaction.options.getString("닉네임"))
+        if(result.mode && result.search){
+            await interaction.followUp({embeds: [result.exampleEmbed], components: [selectData.character_search(interaction.options.getString('닉네임'))]})
         }
-    }
-    if(interaction.commandName === "인포") {
-        await interaction.reply({ content: "해당 명령어는 /검색으로 통합시켰습니다. /검색 {닉네임} 입력하신 후 선택박스에서 선택해보세요." })
-    }
-    if(interaction.commandName === "배럭") {
-        await interaction.reply({ content: "해당 명령어는 /검색으로 통합시켰습니다. /검색 {닉네임} 입력하신 후 선택박스에서 선택해보세요." })
-    }
-    if (interaction.commandName === "보석") {
-        await interaction.reply({ content: "해당 명령어는 /검색으로 통합시켰습니다. /검색 {닉네임} 입력하신 후 선택박스에서 선택해보세요." })
-    }
-    if (interaction.commandName === "내실") {
-        await interaction.editReply({ content: "해당 명령어는 /검색으로 통합시켰습니다. /검색 {닉네임} 입력하신 후 선택박스에서 선택해보세요." })
+        if(result.mode && !result.search){
+            await interaction.followUp({embeds: [result.exampleEmbed]})
+        }
+        if(!result.mode){
+            await interaction.followUp({embeds: [result.exampleEmbed]})
+        }
     }
     if (interaction.commandName === "도전") {
         result = await loa_commands1.loa_challenge(interaction, url)
@@ -109,25 +103,9 @@ client.on('message', async(msg) => {
         result = await loa_commands2.help(msg, url)
         await msg.channel.send({ embeds: [result] })
     }
-    if((msg.content.split(" ")[0] === "!검색" || msg.content.split(" ")[0] === "!ㄳ" || msg.content.split(" ")[0] === "!ㄱㅅ") && msg.content.split(" ")[1] != null) {
-        result = await loa_commands2.character_search(msg, url)
-        await msg.channel.send({ embeds: [result] })
-    }
-    if((msg.content.split(" ")[0] === "!인포" || msg.content.split(" ")[0] === "!ㅇㅍ") && msg.content.split(" ")[1] != null) {
-        result = await loa_commands2.character_info(msg, url)
-        await msg.channel.send({ embeds: [result] })
-    }
-    if((msg.content.split(" ")[0] === "!배럭" || msg.content.split(" ")[0] === "!ㅂㄹ") && msg.content.split(" ")[1] != null) {
-        result = await loa_commands2.character_barracks(msg, url)
-        await msg.channel.send({ embeds: [result] })
-    }
-    if ((msg.content.split(" ")[0] === "!보석" || msg.content.split(" ")[0] === "!쥬얼" || msg.content.split(" ")[0] === "!ㅈㅇ") && msg.content.split(" ")[1].length >= 1) {
-        result = await loa_commands2.character_jewel(msg, url)
-        await msg.channel.send({ embeds: [result] })
-    }
-    if ((msg.content.split(" ")[0] === "!내실" || msg.content.split(" ")[0] === "!ㄴㅅ") && msg.content.split(" ")[1] != null) {
-        result = await loa_commands2.character_life(msg, url)
-        await msg.channel.send({ embeds: [result] })
+    if ((msg.content.split(" ")[0] === "!검색" || msg.content.split(" ")[0] === "!ㄳ" || msg.content.split(" ")[0] === "!ㄱㅅ") && msg.content.substring(4).length != 0) {
+        // result = await loa_commands2.loa_shop(msg, url)
+        await msg.channel.send("해당 명령어는 폐기했습니다. '/검색'을 이용해주시길 바랍니다.")
     }
     if ((msg.content.split(" ")[0] === "!도전" || msg.content.split(" ")[0] === "!ㄷㅈ")) {
         result = await loa_commands2.loa_challenge(msg, url)
