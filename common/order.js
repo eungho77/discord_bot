@@ -57,19 +57,23 @@ const order = {
             },
             {
                 name: '[카드]',
-                value:  card,
+                value:  card.length == 0 ? "카드가 없습니다." : card,
                 inline: true
             },
             {
                 name: '[각인]',
-                value:  engrave,
+                value:  engrave.length == 0 ? "각인이 없습니다." : engrave,
                 inline: true
             },
             {
                 name: '[보석]',
-                value:  jewel
+                value: jewel.length == 0 ? "보석이 없습니다." : jewel
             }
         )
+
+        console.log('ddd')
+        console.log(data)
+
         return data
     },
     barak: function(result){
