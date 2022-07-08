@@ -63,6 +63,7 @@ client.on('interactionCreate', async(interaction) => {
     if (interaction.commandName === '검색') {
         await interaction.deferReply();
         result = await loa_commands1.character_search(interaction, url, interaction.options.getString("닉네임"))
+        console.log(result)
         if(result.mode && result.search){
             await interaction.followUp({embeds: [result.exampleEmbed], components: [selectData.character_search(interaction.options.getString('닉네임'))]})
         }
@@ -75,16 +76,18 @@ client.on('interactionCreate', async(interaction) => {
     }
     if (interaction.commandName === "도전") {
         result = await loa_commands1.loa_challenge(interaction, url)
+        console.log(result)
         await interaction.reply({ embeds: [result] })
     }
     if (interaction.commandName === "스케줄") {
         result = await loa_commands1.loa_totay(interaction, url)
+        console.log(result)
         await interaction.reply({ embeds: [result] })
     }
     if (interaction.commandName === "상점") {
         await interaction.deferReply();
         shop = await loa_commands1.loa_shop(interaction, url)
-
+        console.log(shop)
         if(shop.row != null) {
             await interaction.followUp({ embeds: [shop.exampleEmbed], components: [shop.row] })
         } else {
@@ -93,6 +96,7 @@ client.on('interactionCreate', async(interaction) => {
     }
     if (interaction.commandName === "마리샵") {
         result = await loa_commands1.loa_shop_mari(interaction, url)
+        console.log(result)
         await interaction.reply({ embeds: [result] })
     }
 })
@@ -125,14 +129,28 @@ client.on('interactionCreate', async interaction => {
     if (!interaction.isSelectMenu()) return;
 
     if(interaction.customId === 'search') {
-        await interaction.deferReply();
+        await interaction.deferReply()
         result = await loa_commands1.select_item(interaction, url)
-        await interaction.followUp({ embeds: [result], components: [selectData.character_search(interaction.values[0].split(":")[1])]})
+        
+        console.log(result)
+        console.log(selectData.character_search(interaction.values[0].split(":")[1]))
+
+        if(result.mode && result.search){
+            await interaction.followUp({embeds: [result.exampleEmbed], components: [selectData.character_search(interaction.values[0].split(":")[1])]})
+        }
+        if(result.mode && !result.search){
+            await interaction.followUp({embeds: [result.exampleEmbed]})
+        }
+        if(!result.mode){
+            await interaction.followUp({embeds: [result.exampleEmbed]})
+        }
     }
 
     if(interaction.customId === 'items') {
         await interaction.deferReply();
         result = await loa_commands1.loa_shop(interaction, url)
+
+        console.log(result)
         await interaction.followUp({ embeds: [result.exampleEmbed], components: [shop.row] })
     }
 });

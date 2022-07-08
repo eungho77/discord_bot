@@ -37,15 +37,9 @@ const discord = {
             result = await discord.character_search(interaction, url, nickname)
         }
         if(num == 2){
-            result = await discord.character_info(interaction, url, nickname)
-        }
-        if(num == 3){
             result = await discord.character_barracks(interaction, url, nickname)
         }
-        if(num == 4){
-            result = await discord.character_jewel(interaction, url, nickname)
-        }
-        if(num == 5){
+        if(num == 3){
             result = await discord.character_life(interaction, url, nickname)
         }
 
@@ -62,11 +56,11 @@ const discord = {
                 exampleEmbed.fields = order.search(info.data)
             } else {
                 exampleEmbed.description = '[' + nickname + ']님은 존재하지 않습니다.'
-                exampleEmbed.fields = order.search(info.data)
+                exampleEmbed.fields = info.data.search
             }
             if(!info.data.mode) {
-                exampleEmbed.description = info.data.title
-                exampleEmbed.fields = []
+                exampleEmbed.description = '[서버 점검 중]'
+                exampleEmbed.fields = info.data.title
             }
 
             result = {
@@ -86,72 +80,75 @@ const discord = {
 
         return result
     },
-    character_info: async (interaction, url, nickname) => {
-        exampleEmbed.title = '각인 / 카드 안내'
-        if (interaction.channelId === channelsId){
-            let info = await axios.get(url+'/api/info?nickname=' + encodeURI(nickname));
-            if(info.data.nickname != null) {
-                exampleEmbed.description = '[' + info.data.nickname + ']님이 가지고 있는 세부정보 입니다.'
-                exampleEmbed.fields = order.info(info.data)
-            } else {
-                exampleEmbed.description = '캐릭터 정보가 없습니다.'
-                exampleEmbed.fields = []
-            }
-        } else {
-            exampleEmbed.description = "전투정보실 채널에서 조회하세요!"
-            exampleEmbed.fields = []
-        }
-        return exampleEmbed
-    },
     character_barracks: async (interaction, url, nickname) => {
+        let result = {}
+
         exampleEmbed.title = '보유캐릭터 안내'
         if (interaction.channelId === channelsId){
             let info = await axios.get(url+'/api/info?nickname=' + encodeURI(nickname))
-            if(info.data.nickname != null) {
+            if(info.data.search) {
                 exampleEmbed.description = '[' + info.data.nickname + ']님이 가지고 있는 보유캐릭터 정보입니다.'
                 exampleEmbed.fields = order.barak(info.data)
             } else {
                 exampleEmbed.description = '캐릭터 정보가 없습니다.'
                 exampleEmbed.fields = []
             }
-        } else {
-            exampleEmbed.description = "전투정보실 채널에서 조회하세요!"
-            exampleEmbed.fields = []
-        }
+            if(!info.data.mode) {
+                exampleEmbed.description = '[서버 점검 중]'
+                exampleEmbed.fields = info.data.title
+            }
 
-        return exampleEmbed
-    },
-    character_jewel: async (interaction, url, nickname) => {
-        exampleEmbed.title = '보석 안내'
-        if (interaction.channelId === channelsId){
-            let info = await axios.get(url+'/api/info?nickname=' + encodeURI(nickname))
-            if(info.data.nickname != null) {
-                exampleEmbed.description = '[' + info.data.nickname + ']님이 가지고 있는 보석 정보입니다.';
-                exampleEmbed.fields = order.jewel(info.data)
-            } else {
-                exampleEmbed.description = '캐릭터 정보가 없습니다.'
-                exampleEmbed.fields = []
+            result = {
+                exampleEmbed: exampleEmbed,
+                search: info.data.search,
+                mode: info.data.mode
             }
         } else {
             exampleEmbed.description = "전투정보실 채널에서 조회하세요!"
             exampleEmbed.fields = []
+
+            result = {
+                exampleEmbed: exampleEmbed,
+                mode: false
+            }
         }
 
-        return exampleEmbed
+        return result
     },
     character_life: async (interaction, url, nickname) => {
+        let result = {}
+
         exampleEmbed.title = '생활 수집 / 수집품 안내'
         if (interaction.channelId === channelsId){
-            const result = await axios.get(url+'/api/internal_stability?nickname=' + encodeURI(nickname))
+            let info = await axios.get(url+'/api/internal_stability?nickname=' + encodeURI(nickname))
+            if(info.data.search) {
+                exampleEmbed.description = '[' + nickname + ']님이 가지고 있는 내실 정보입니다.'
+                exampleEmbed.fields = order.life(info.data)
+            } else {
+                exampleEmbed.description = '캐릭터 정보가 없습니다.'
+                exampleEmbed.fields = []
+            }
+            if(!info.data.mode) {
+                exampleEmbed.description = '[서버 점검 중]'
+                exampleEmbed.fields = info.data.title
+            }
 
-            exampleEmbed.description = '[' + nickname + ']님이 가지고 있는 내실 정보입니다.'
-            exampleEmbed.fields = order.life(result.data)
+            result = {
+                exampleEmbed: exampleEmbed,
+                search: info.data.search,
+                mode: info.data.mode
+            }
         } else {
             exampleEmbed.description = "전투정보실 채널에서 조회하세요!"
             exampleEmbed.fields = []
+
+            result = {
+                exampleEmbed: exampleEmbed,
+                mode: info.data.mode
+            }
         }
 
-        return exampleEmbed
+        return result
     },
     loa_challenge: async (interaction, url) => {
         exampleEmbed.title = '도전 가디언 토벌 / 어비스 던전 안내'
@@ -159,7 +156,7 @@ const discord = {
             const result = await axios.get(url+'/api/inven/challenge')
             const param = result.data
 
-            exampleEmbed.description = result.data.date
+            exampleEmbed.description = "▶ 기간 : " + param.date.split("이번 주 도전 가디언 & 어비스 날짜 및 시간 :")[1]
             exampleEmbed.fields = order.challenge(param)
         } else {
             exampleEmbed.description = "전투정보실 채널에서 조회하세요!"

@@ -15,148 +15,161 @@ const order = {
 
         return data
     },
-
-    info: function(result) {
-        const data = [];
-        
-        data.push({name: '[각인 정보]', value: '\u200B'})
-        for (var i of result.engrave) {
-            data.push({name: i.name + "/" + i.level, value: i.text, inline: true})
-        }
-        data.push(
-            {name: '\u200B', value: '\u200B'},
-            {name: '[카드 정보]', value: '\u200B'},
-        )
-        for (var j of result.card) {
-            data.push({name: j.card_name, value: j.card_stone_count + "각", inline: true})
-        }
-
-        return data
-    },
-
     search: function(result) {
-        const data = [];
+        const data = []
+        let battle = "" // 전투 특성
+        let card = "" // 카드
+        let engrave = "" // 각인
+        let jewel = "" // 보석
 
-        if(result.mode) {
-            if(result.search){
-                // 기본 정보
-                data.push(
-                    { name: '[기본 정보]', value: '\u200B' },
-                    { name: '닉네임', value: result.nickname, inline: true },
-                    { name: '서버', value: result.server, inline: true},
-                    { name: '직업', value: result.job, inline: true },
-                    { name: '원정대 레벨', value: "Lv. " + result.expedition, inline: true },
-                    { name: '레벨', value: result.level, inline: true },
-                    { name: '아이템 레벨', value: result.itemLevel, inline: true },
-                );
-                // 기본 특성
-                data.push(
-                    { name: '\u200B', value: '\u200B' },
-                    { name: '[기본 특성]', value: '\u200B' },
-                    { name: '공격력', value: result.basic.attack, inline: true },
-                    { name: '최대생명력', value: result.basic.hp, inline: true},
-                )
-
-                // 전투 특성
-                data.push(
-                    { name: '\u200B', value: '\u200B' },
-                    { name: '[전투 특성]', value: '\u200B' },
-                )
-                for(var x of result.battle){
-                    data.push({ name: x.name, value: x.number, inline: true })
-                }
-            } else {
-                data.push({ name: '\u200B', value: result.content, inline: true })
-            }
+        for(var a of result.battle){
+            battle += '▶ ' + a.name + ' : ' + a.number + "\n"
         }
 
+        for(var a of result.card){
+            card += '▶ ' + a.name + ' : ' + a.stone_count + "\n"
+        }
+
+        for (var a of result.engrave) {
+            engrave += '▶ ' + a.name + ' : ' + a.level + "\n"
+        }
+
+        for (var a of result.jewel) {
+            jewel += '▶ ' + a.level + ' ' + a.type + "의 보석 > " + a.name + "의 " + a.effect + "\n"
+        }
+
+        data.push(
+            {
+                name: '[기본 정보]',
+                value: '▶ 서버 : ' + result.server + '\n▶ 직업 : ' + result.job
+                + '\n▶ 원정대 레벨 : Lv.' + result.expedition + '\n▶ 레벨 : ' + result.level + '\n▶ 아이템 레벨 : ' + result.itemLevel,
+                inline: true
+            },
+            {
+                name: '[기본 특성]',
+                value: '▶ 공격력 : ' + result.basic.attack + '\n▶ 최대 생명력 : ' + result.basic.hp,
+                inline: true
+            },
+            {
+                name: '[전투 특성]',
+                value:  battle,
+                inline: true
+            },
+            {
+                name: '[카드]',
+                value:  card,
+                inline: true
+            },
+            {
+                name: '[각인]',
+                value:  engrave,
+                inline: true
+            },
+            {
+                name: '[보석]',
+                value:  jewel
+            }
+        )
         return data
     },
-
     barak: function(result){
         const data = [];
+        let baraks = "";
 
-        for(var z of result.expand){
-            data.push({ name:  z.nickname +"/"+ " Lv. " + z.itemLevel, value: "서버 : " + z.server + "\n 직업 : " + z.job, inline: true})
+        for(var a of result.expand){
+            baraks += '▶ ' + a.server + " / " + a.job + " / " + a.itemLevel + " / " + a.nickname + "\n"
         }
+
+        data.push(
+            {
+                name:  '▶ 서버 / 직업 / 아이템레벨 / 닉네임',
+                value: baraks,
+                inline: true
+            }
+        )
 
         return data
     },
-
-    jewel: function (result) {
+    life: function (result) {
         const data = [];
+        let collection = "";
+        let life = "";
 
-        // 보석 정보
-        for (var z of result.jewel) {
-            data.push({name: z.jewel_name + "/ " + z.jewel_level, value: z.jewel_effect, inline: true})
+        for(let a of result.life){
+            life += '▶ ' + a.name + " > " + a.level + "\n"
         }
 
-        return data;
-    },
-
-    life: function (collection) {
-        const data = [];
+        for(var a of result.collection){
+            collection += '▶ ' + a.name + " > " + a.count + "개 \n"
+        }
 
         // 생활 스킬
         data.push(
-            { name: '\u200B', value: '\u200B' },
-            { name: '[생활스킬 정보]', value: '\u200B' },
+            {
+                name: '[생활 스킬]',
+                value: life,
+                inline: true
+            },
+            {
+                name: '[내실]',
+                value: collection,
+                inline: true
+            }
         )
-        for(var z of collection.life){
-            data.push({ name:  z.life_name, value: z.life_level, inline: true})
-        }
-
-        // 내실
-        data.push(
-            { name: '\u200B', value: '\u200B' },
-            { name: '[내실 정보]', value: '\u200B' },
-        )
-        for(var j of collection.collection){
-            data.push({ name:  j.collection_name, value: j.collection_count + "개", inline: true})
-        }
 
         return data
     },
-
     challenge: function(param) {
         const data = []
-        var count = 1;
 
-        // 도전 가디언 토벌
-        data.push(
-            { name: '[도전 가디언 토벌]', value: '\u200B' },
-        )
-        for(var z of param.raid){
-            data.push({ name: '[도전 ' + count + ']' , value: z.name, inline: true})
-            count = count + 1
+        let raid = "" // 도전 가디언 토벌
+        let abyss = "" // 도전 어비스 던전
+
+        for(var a of param.raid){
+            raid += '▶ ' + a.name + "\n"
         }
-        count = 1
-        // 도전 어비스 던전
-        data.push(
-            { name: '\u200B', value: '\u200B' },
-            { name: '[도전 어비스 던전]', value: '\u200B' }
-        )
-        for(var z of param.abyss){
-            data.push({ name: '[도전 ' + count + ']' , value: z.name, inline: true})
-            count = count + 1
+
+        for(var a of param.abyss){
+            abyss += '▶ ' + a.name + "\n"
         }
+
+        data.push(
+            {
+                name: '[도전 가디언 토벌]',
+                value: raid,
+                inline: true
+            },
+            {
+                name: '[도전 어비스 던전]',
+                value: abyss,
+                inline: true
+            }
+        )
 
         return data
     },
+    today: function(result) {
+        const data = []
+        let today = ""
+        var count = 1
 
-    today: function(param) {
-        const data = [];
-        var count = 1;
-
-        // 도전 가디언 토벌
-        for(var z of param){
-            data.push({ name: count + ". " + z.name, value: z.time, inline: true})
+        for(let a of result){
+            if(count <= 30) {
+                today += "▶ " + count + ". " + a.name + " / " + a.time + "\n"
+            }
             count = count + 1;
         }
 
+        data.push(
+            {
+                name: '오늘의 스케줄',
+                value: today,
+                inline: true
+            }
+        )
+
         return data
     },
-    
     shop1: async (param) => {
         let result = param.items
 
@@ -219,17 +232,21 @@ const order = {
         return init
     },
     shop_mari: function(param) {
-        const data = [];
-        let count = 1;
+        const data = []
+        let item = ""
 
         for(let a of param) {
             if(a.mode)
-                count = 1
-                data.push({ name: a.type, value: "\u200B"})
+                item = "";
                 for(let b of a.mari_list) {
-                    data.push({ name: "No. " + count++, value: ((b.popularity == "인기") ? "[" + b.popularity + "] " : "") + b.item + "\n크리스탈 > " + b.amount, inline: true})
+                    item += "▶ " + ((b.popularity == "인기") ? "[" + b.popularity + "] " : "") + b.item + " / 크리스탈 " + b.amount + "개 \n"
                 }
-                data.push({ name: "\u200B", value: "\u200B"})
+                data.push(
+                    {
+                        name: a.type,
+                        value: item
+                    }
+                )
             }
 
         return data

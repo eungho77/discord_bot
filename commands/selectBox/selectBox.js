@@ -3,10 +3,9 @@ const selectBox = require('./select')
 
 const selectData = {
     character_search: (nickname) => {
-        let count = 1;
+        let count = 1
 
         for(let a of selectBox) {
-            a.description = "[" + nickname + "] 님의 " + a.description
             a.value = (count++) + ":" + nickname
         }
 
