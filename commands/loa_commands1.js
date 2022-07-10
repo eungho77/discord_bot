@@ -50,7 +50,7 @@ const discord = {
 
         exampleEmbed.title = '정보 / 기본, 전투 특성'
         if (interaction.channelId === channelsId){
-            let info = await axios.get(url+'/api/info?nickname=' + encodeURI(nickname))
+            let info = await axios.get(url+'/api/info?nickname=' + encodeURI(nickname) + '&username=' + encodeURI(interaction.user.username) + '&command=' + encodeURI("검색"))
             if(info.data.search) {
                 exampleEmbed.description = '[' + info.data.nickname + ']님이 가지고 있는 기본 정보입니다.'
                 exampleEmbed.fields = order.search(info.data)
@@ -85,7 +85,7 @@ const discord = {
 
         exampleEmbed.title = '보유캐릭터 안내'
         if (interaction.channelId === channelsId){
-            let info = await axios.get(url+'/api/info?nickname=' + encodeURI(nickname))
+            let info = await axios.get(url+'/api/info?nickname=' + encodeURI(nickname) + '&username=' + encodeURI(interaction.user.username) + '&command=' + encodeURI("배럭"))
             if(info.data.search) {
                 exampleEmbed.description = '[' + info.data.nickname + ']님이 가지고 있는 보유캐릭터 정보입니다.'
                 exampleEmbed.fields = order.barak(info.data)
@@ -120,7 +120,7 @@ const discord = {
 
         exampleEmbed.title = '생활 수집 / 수집품 안내'
         if (interaction.channelId === channelsId){
-            let info = await axios.get(url+'/api/internal_stability?nickname=' + encodeURI(nickname))
+            let info = await axios.get(url+'/api/internal_stability?nickname=' + encodeURI(nickname) + '&username=' + encodeURI(interaction.user.username) + '&command=' + encodeURI("내실"))
             if(info.data.search) {
                 exampleEmbed.description = '[' + nickname + ']님이 가지고 있는 내실 정보입니다.'
                 exampleEmbed.fields = order.life(info.data)
@@ -153,7 +153,7 @@ const discord = {
     loa_challenge: async (interaction, url) => {
         exampleEmbed.title = '도전 가디언 토벌 / 어비스 던전 안내'
         if (interaction.channelId === channelsId){
-            const result = await axios.get(url+'/api/inven/challenge')
+            const result = await axios.get(url+'/api/inven/challenge?&username=' + encodeURI(interaction.user.username) + '&command=' + encodeURI("도전"))
             const param = result.data
 
             exampleEmbed.description = "▶ 기간 : " + param.date.split("이번 주 도전 가디언 & 어비스 날짜 및 시간 :")[1]
@@ -168,7 +168,7 @@ const discord = {
     loa_totay: async (interaction, url) => {
         exampleEmbed.title = '로스트아크 스케줄 정보'
         if (interaction.channelId === channelsId){
-            const result = await axios.get(url+'/api/inven/timer')
+            const result = await axios.get(url+'/api/inven/timer?username=' + encodeURI(interaction.user.username) + '&command=' + encodeURI("스케줄"))
             const param = result.data
 
             exampleEmbed.description = ''
@@ -194,7 +194,7 @@ const discord = {
 
         exampleEmbed.title = '로스트아크 상점가'
         if (interaction.channelId === channelsId){
-            const result = await axios.get(url+'/api/shop/search?items='+encodeURI(items_name));
+            const result = await axios.get(url+'/api/shop/search?items=' + encodeURI(items_name) +'&username=' + encodeURI(interaction.user.username) + '&command=' + encodeURI("상점"))
             const param = result.data;
             const shop_param = await order.shop1(param);
 
@@ -222,7 +222,7 @@ const discord = {
 
         exampleEmbed.title = '로스트아크 마리샵'
         if (interaction.channelId === channelsId){
-            const result = await axios.get(url+'/api/shop/mari');
+            const result = await axios.get(url+'/api/shop/mari?username=' + encodeURI(interaction.user.username) + '&command=' + encodeURI("마리샵"));
             const param = result.data;
 
             exampleEmbed.description = "" ;

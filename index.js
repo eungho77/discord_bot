@@ -21,6 +21,8 @@ for (const file of commandFiles) {
 const rest = new REST({version: '9'}).setToken(token)
 let shop = "";
 
+const wait = require('node:timers/promises').setTimeout;
+
 client.on('ready', () => {
     (async () => {
         try {
@@ -126,32 +128,29 @@ client.on('message', async(msg) => {
 });
 
 client.on('interactionCreate', async interaction => {
-    if (!interaction.isSelectMenu()) return;
-
+    if (!interaction.isSelectMenu()) return
+    
     if(interaction.customId === 'search') {
-        await interaction.deferReply()
+        await interaction.deferUpdate()
         result = await loa_commands1.select_item(interaction, url)
-        
-        console.log(result)
-        console.log(selectData.character_search(interaction.values[0].split(":")[1]))
 
         if(result.mode && result.search){
-            await interaction.followUp({embeds: [result.exampleEmbed], components: [selectData.character_search(interaction.values[0].split(":")[1])]})
+            await interaction.editReply({embeds: [result.exampleEmbed], components: [selectData.character_search(interaction.values[0].split(":")[1])]})
         }
         if(result.mode && !result.search){
-            await interaction.followUp({embeds: [result.exampleEmbed]})
+            await interaction.editReply({embeds: [result.exampleEmbed]})
         }
         if(!result.mode){
-            await interaction.followUp({embeds: [result.exampleEmbed]})
+            await interaction.editReply({embeds: [result.exampleEmbed]})
         }
     }
 
     if(interaction.customId === 'items') {
-        await interaction.deferReply();
+        await interaction.deferUpdate()
         result = await loa_commands1.loa_shop(interaction, url)
 
         console.log(result)
-        await interaction.followUp({ embeds: [result.exampleEmbed], components: [shop.row] })
+        await interaction.editReply({ embeds: [result.exampleEmbed], components: [shop.row] })
     }
 });
 
