@@ -174,14 +174,12 @@ const order = {
 
         return data
     },
-    shop1: async (param) => {
+    shop: async (param) => {
         let result = param.items
-
         let data = [];
         let row_data = [];
-
+        let items = "";
         var count = 1
-
         let shop_result = '';
 
         if(Array.isArray(result)){
@@ -189,7 +187,7 @@ const order = {
                 for(z of result){
                     row_data.push({label: z, description: '', value: z})
                 }
-                data.push({ name: "아래 항목을 클릭하여 선택하세요.", value: "아래 항목을 클릭하여 선택을 하시면 자동으로 검색이 됩니다.", inline: true})
+                data.push({ name: "[아래 선택 사항을 선택하세요.]", value: "▶ 그럼 자동으로 검색이 됩니다.", inline: true})
             }
 
             const row = new MessageActionRow()
@@ -200,8 +198,7 @@ const order = {
                         .addOptions(row_data),
                 )
 
-            data.push({ name: '\u200B', value: "\u200B" })
-            data.push({ name: '출처', value: "개발자 : 모코코더" })
+            data.push({ name: '[출처]', value: "▶ 개발자 : 모코코더" })
             
             init = {
                 row: row,
@@ -213,8 +210,10 @@ const order = {
                 if(shop_result.data.Result === "Success") {
                     let count = 1;
                     for(i of shop_result.data.Pricechart) {
-                        data.push({ name: "No. " + count++, value: "개수 > " + i.Amount + "\n골드 > " + i.Price})
+                        items += '▶ ' + i.Amount + '개 / ' + i.Price + '골드 \n'
                     }
+
+                    data.push({ name: "[거래소]", value: items})
                 }
                 init = {
                     item_name: shop_result.data.Name,
@@ -225,8 +224,7 @@ const order = {
                 data.push({ name: 'error', value: result })
             }
 
-            data.push({ name: '\u200B', value: "\u200B" })
-            data.push({ name: '출처', value: "개발자 : 모코코더" })
+            data.push({ name: '[출처]', value: "▶ 개발자 : 모코코더" })
             
             init = {
                 data: data

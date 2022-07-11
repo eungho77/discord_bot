@@ -65,7 +65,6 @@ client.on('interactionCreate', async(interaction) => {
     if (interaction.commandName === '검색') {
         await interaction.deferReply();
         result = await loa_commands1.character_search(interaction, url, interaction.options.getString("닉네임"))
-        console.log(result)
         if(result.mode && result.search){
             await interaction.followUp({embeds: [result.exampleEmbed], components: [selectData.character_search(interaction.options.getString('닉네임'))]})
         }
@@ -78,19 +77,16 @@ client.on('interactionCreate', async(interaction) => {
     }
     if (interaction.commandName === "도전") {
         result = await loa_commands1.loa_challenge(interaction, url)
-        console.log(result)
         await interaction.reply({ embeds: [result] })
     }
     if (interaction.commandName === "스케줄") {
         result = await loa_commands1.loa_totay(interaction, url)
-        console.log(result)
         await interaction.reply({ embeds: [result] })
     }
     if (interaction.commandName === "상점") {
         await interaction.deferReply();
-        shop = await loa_commands1.loa_shop(interaction, url)
-        console.log(shop)
-        if(shop.row != null) {
+        shop = await loa_commands1.loa_shop(interaction, url) 
+        if(shop.row != false) {
             await interaction.followUp({ embeds: [shop.exampleEmbed], components: [shop.row] })
         } else {
             await interaction.followUp({ embeds: [shop.exampleEmbed] })
@@ -98,7 +94,6 @@ client.on('interactionCreate', async(interaction) => {
     }
     if (interaction.commandName === "마리샵") {
         result = await loa_commands1.loa_shop_mari(interaction, url)
-        console.log(result)
         await interaction.reply({ embeds: [result] })
     }
 })
@@ -110,19 +105,16 @@ client.on('message', async(msg) => {
         await msg.channel.send({ embeds: [result] })
     }
     if ((msg.content.split(" ")[0] === "!검색" || msg.content.split(" ")[0] === "!ㄳ" || msg.content.split(" ")[0] === "!ㄱㅅ") && msg.content.substring(4).length != 0) {
-        // result = await loa_commands2.loa_shop(msg, url)
         await msg.channel.send("해당 명령어는 폐기했습니다. '/검색'을 이용해주시길 바랍니다.")
     }
     if ((msg.content.split(" ")[0] === "!도전" || msg.content.split(" ")[0] === "!ㄷㅈ")) {
-        result = await loa_commands2.loa_challenge(msg, url)
-        await msg.channel.send({ embeds: [result] })
+        await msg.channel.send("해당 명령어는 폐기했습니다. '/도전'을 이용해주시길 바랍니다.")
     }
     if ((msg.content.split(" ")[0] === "!스케줄" || msg.content.split(" ")[0] === "!ㅅㅋㅈ")) {
         result = await loa_commands2.loa_totay(msg, url)
         await msg.channel.send({ embeds: [result] })
     }
     if ((msg.content.split(" ")[0] === "!상점" || msg.content.split(" ")[0] === "!ㅅㅈ") && msg.content.substring(4).length != 0) {
-        // result = await loa_commands2.loa_shop(msg, url)
         await msg.channel.send("해당 명령어는 폐기했습니다. '/상점'을 이용해주시길 바랍니다.")
     }
 });
@@ -149,7 +141,6 @@ client.on('interactionCreate', async interaction => {
         await interaction.deferUpdate()
         result = await loa_commands1.loa_shop(interaction, url)
 
-        console.log(result)
         await interaction.editReply({ embeds: [result.exampleEmbed], components: [shop.row] })
     }
 });
