@@ -66,7 +66,7 @@ client.on('interactionCreate', async(interaction) => {
         await interaction.deferReply();
         result = await loa_commands1.character_search(interaction, url, interaction.options.getString("닉네임"))
         if(result.mode && result.search){
-            await interaction.followUp({embeds: [result.exampleEmbed], components: [selectData.character_search(interaction.options.getString('닉네임'))]})
+            await interaction.followUp({embeds: [result.exampleEmbed], components: [selectData.character_search()]})
         }
         if(result.mode && !result.search){
             await interaction.followUp({embeds: [result.exampleEmbed]})
@@ -85,7 +85,7 @@ client.on('interactionCreate', async(interaction) => {
     }
     if (interaction.commandName === "상점") {
         await interaction.deferReply();
-        shop = await loa_commands1.loa_shop(interaction, url) 
+        shop = await loa_commands1.loa_shop(interaction, url)
         if(shop.row != false) {
             await interaction.followUp({ embeds: [shop.exampleEmbed], components: [shop.row] })
         } else {
@@ -95,6 +95,16 @@ client.on('interactionCreate', async(interaction) => {
     if (interaction.commandName === "마리샵") {
         result = await loa_commands1.loa_shop_mari(interaction, url)
         await interaction.reply({ embeds: [result] })
+    }
+    if (interaction.commandName === "사전") {
+        await interaction.deferReply();
+        result = await loa_commands1.dictionary(interaction, url)
+        if(result.row != '') {
+            await interaction.followUp({ embeds: [result.exampleEmbed], components: [result.row] })
+        } else {
+            await interaction.followUp({ embeds: [result.exampleEmbed] })
+        }
+
     }
 })
 
@@ -142,6 +152,12 @@ client.on('interactionCreate', async interaction => {
         result = await loa_commands1.loa_shop(interaction, url)
 
         await interaction.editReply({ embeds: [result.exampleEmbed], components: [shop.row] })
+    }
+
+    if(interaction.customId === 'dictionary_item') {
+        await interaction.deferUpdate()
+        result = await loa_commands1.dictionary(interaction, url)
+        await interaction.editReply({ embeds: [result.exampleEmbed] })
     }
 });
 

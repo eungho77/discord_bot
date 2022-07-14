@@ -75,7 +75,6 @@ const discord = {
             search: info.data.search,
             mode: info.data.mode
         }
-
         return result
     },
     character_barracks: async (interaction, url, nickname) => {
@@ -177,7 +176,7 @@ const discord = {
     },
     loa_shop: async (interaction, url) => {
         let shop_param = ""
-        let items_name = "";
+        let items_name = ""
 
         if(interaction.commandName === "상점") {
             items_name = interaction.options.getString('아이템')
@@ -190,14 +189,15 @@ const discord = {
         const result = await axios.get(url+'/api/shop/search?items=' + encodeURI(items_name) +'&username=' + encodeURI(interaction.member.nickname) + '&command=' + encodeURI("상점"))
 
         if (interaction.channelId === channelsId){
-            const param = result.data;
-            shop_param = await order.shop(param);
-            exampleEmbed.title = '아이템 명 : [' + items_name + ']'
-            exampleEmbed.description = '' ;
-            exampleEmbed.fields = shop_param.data;
+            const param = result.data
+            shop_param = await order.shop(param)
+            let item = ( 'item_name' in shop_param ) ? shop_param.item_name : items_name
+            exampleEmbed.title = "아이템 명 : [" + item + "]"
+            exampleEmbed.description = ''
+            exampleEmbed.fields = shop_param.data
         } else {
-            exampleEmbed.description = "전투정보실 채널에서 조회하세요!";
-            exampleEmbed.fields = [];
+            exampleEmbed.description = "전투정보실 채널에서 조회하세요!"
+            exampleEmbed.fields = []
         }
 
         final_result = {
@@ -209,23 +209,65 @@ const discord = {
         return final_result
     },
     loa_shop_mari: async (interaction, url) => {
-        const shop_param = "";
-        let items_name = "";
+        const shop_param = ""
+        let items_name = ""
+        const result = await axios.get(url+'/api/shop/mari?username=' + encodeURI(interaction.member.nickname) + '&command=' + encodeURI("마리샵"));
 
         exampleEmbed.title = '로스트아크 마리샵'
         if (interaction.channelId === channelsId){
-            const result = await axios.get(url+'/api/shop/mari?username=' + encodeURI(interaction.member.nickname) + '&command=' + encodeURI("마리샵"));
-            const param = result.data;
+            const param = result.data
 
-            exampleEmbed.description = "" ;
-            exampleEmbed.fields = await order.shop_mari(param);
+            exampleEmbed.description = ""
+            exampleEmbed.fields = await order.shop_mari(param)
         } else {
-            exampleEmbed.description = "전투정보실 채널에서 조회하세요!";
-            exampleEmbed.fields = [];
+            exampleEmbed.description = "전투정보실 채널에서 조회하세요!"
+            exampleEmbed.fields = []
         }
 
         console.log(exampleEmbed)
         return exampleEmbed
+    },
+    dictionary: async (interaction, url, item) => {
+        let result = {}
+        let data_row = '';
+
+        if(interaction.commandName === "사전") {
+            items_name = interaction.options.getString('아이템')
+        }
+
+        if(interaction.customId === 'dictionary_item'){
+            items_name = interaction.values[0]
+        }
+
+        const param = await axios.get(url+'/api/loa/dictionary?items=' + encodeURI(items_name) + '&command=' + encodeURI("사전"));
+
+        if (interaction.channelId === channelsId) {
+            if (param.data.search && param.data.result.content.length >= 1) {
+                const result = await order.dictionary(param.data.result)
+                exampleEmbed.title = param.data.result.name
+                exampleEmbed.description = ''
+                exampleEmbed.fields = result.data
+            }
+
+            if (param.data.search && param.data.result.content.length == 0) {
+                exampleEmbed.title = '검색 건 수가 ' + param.data.result.name.split(", ").length + '개 있습니다.'
+                exampleEmbed.description = '검색 결과 : [' + items_name + '] \n아래 선택 사항을 이용해주세요.'
+                exampleEmbed.fields = []
+                data_row = await order.dictionary(param.data.result)
+            }
+        } else {
+            exampleEmbed.title = "전투정보실 채널에서 조회하세요!"
+            exampleEmbed.description = ''
+            exampleEmbed.fields = []
+        }
+
+        result.exampleEmbed = exampleEmbed
+        result.search = param.data.search
+        result.mode = param.data.mode
+        result.row = (data_row != '') ? data_row.row : ''
+
+        console.log(result)
+        return result
     }
 }
 

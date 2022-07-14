@@ -215,10 +215,6 @@ const order = {
 
                     data.push({ name: "[거래소]", value: items})
                 }
-                init = {
-                    item_name: shop_result.data.Name,
-                    data: data
-                }
             }
             if(param.mode === "Failed") {
                 data.push({ name: 'error', value: result })
@@ -227,10 +223,10 @@ const order = {
             data.push({ name: '[출처]', value: "▶ 개발자 : 모코코더" })
             
             init = {
+                item_name: shop_result.data.Name,
                 data: data
             }
         }
-
         return init
     },
     shop_mari: function(param) {
@@ -238,9 +234,9 @@ const order = {
         let item = ""
 
         for(let a of param) {
-            if(a.mode)
+            if (a.mode) {
                 item = "";
-                for(let b of a.mari_list) {
+                for (let b of a.mari_list) {
                     item += "▶ " + ((b.popularity == "인기") ? "[" + b.popularity + "] " : "") + b.item + " / 크리스탈 " + b.amount + "개 \n"
                 }
                 data.push(
@@ -250,8 +246,54 @@ const order = {
                     }
                 )
             }
-
+        }
         return data
+    },
+    dictionary: async (param) => {
+        let dictionary_content = "";
+        const data = [];
+        let row_data = [];
+        let result = {};
+
+        console.log('qqqqqqqqqqqqqqqq')
+        console.log(param)
+        console.log(param.content.length)
+
+        if(param.content.length >= 1) {
+            for(let a of param.content) {
+                dictionary_content += '▶ ' + a + '\n'
+            }
+
+            data.push(
+                {
+                    name: '[각인 설명서]',
+                    value: dictionary_content
+                }
+            )
+
+            result = {
+                data: data
+            }
+        }
+        if(param.content.length == 0) {
+            for(let a of param.name.split(", ")) {
+                row_data.push({label: a, description: '', value: a})
+            }
+
+            const row = new MessageActionRow()
+                .addComponents(
+                    new MessageSelectMenu()
+                        .setCustomId('dictionary_item')
+                        .setPlaceholder('아이템을 선택하세요.')
+                        .addOptions(row_data)
+                )
+
+            result = {
+                row: row
+            }
+        }
+
+        return result
     }
 }
 
