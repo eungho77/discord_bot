@@ -66,7 +66,7 @@ client.on('interactionCreate', async(interaction) => {
         await interaction.deferReply();
         result = await loa_commands1.character_search(interaction, url, interaction.options.getString("닉네임"))
         if(result.mode && result.search){
-            await interaction.followUp({embeds: [result.exampleEmbed], components: [selectData.character_search()]})
+            await interaction.followUp({embeds: [result.exampleEmbed], components: [selectData.character_search(interaction.options.getString("닉네임"))]})
         }
         if(result.mode && !result.search){
             await interaction.followUp({embeds: [result.exampleEmbed]})

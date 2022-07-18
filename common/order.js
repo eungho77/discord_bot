@@ -255,11 +255,7 @@ const order = {
         let row_data = [];
         let result = {};
 
-        console.log('qqqqqqqqqqqqqqqq')
-        console.log(param)
-        console.log(param.content.length)
-
-        if(param.content.length >= 1) {
+        if(param.count == 1) {
             for(let a of param.content) {
                 dictionary_content += '▶ ' + a + '\n'
             }
@@ -275,7 +271,7 @@ const order = {
                 data: data
             }
         }
-        if(param.content.length == 0) {
+        if(param.count > 1) {
             for(let a of param.name.split(", ")) {
                 row_data.push({label: a, description: '', value: a})
             }

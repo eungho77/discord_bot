@@ -192,7 +192,7 @@ const discord = {
             const param = result.data
             shop_param = await order.shop(param)
             let item = ( 'item_name' in shop_param ) ? shop_param.item_name : items_name
-            exampleEmbed.title = "아이템 명 : [" + item + "]"
+            exampleEmbed.title = "아이템 명 : [" + item  + "]"
             exampleEmbed.description = ''
             exampleEmbed.fields = shop_param.data
         } else {
@@ -239,22 +239,31 @@ const discord = {
             items_name = interaction.values[0]
         }
 
-        const param = await axios.get(url+'/api/loa/dictionary?items=' + encodeURI(items_name) + '&command=' + encodeURI("사전"));
-
+        const param = await axios.get(url+'/api/loa/dictionary?username=' + encodeURI(interaction.member.nickname) + '&items=' + encodeURI(items_name) + '&command=' + encodeURI("사전"));
+        const data = param.data
+        console.log(param.data.result)
         if (interaction.channelId === channelsId) {
-            if (param.data.search && param.data.result.content.length >= 1) {
-                const result = await order.dictionary(param.data.result)
-                exampleEmbed.title = param.data.result.name
+            if (data.search && data.result.count == 1) {
+                const result = await order.dictionary(data.result)
+                exampleEmbed.title = data.result.name
                 exampleEmbed.description = ''
                 exampleEmbed.fields = result.data
             }
 
-            if (param.data.search && param.data.result.content.length == 0) {
-                exampleEmbed.title = '검색 건 수가 ' + param.data.result.name.split(", ").length + '개 있습니다.'
+            if (data.search && data.result.count > 1) {
+                data_row = await order.dictionary(data.result)
+                exampleEmbed.title = '검색 건 수가 ' + data.result.name.split(", ").length + '개 있습니다.'
                 exampleEmbed.description = '검색 결과 : [' + items_name + '] \n아래 선택 사항을 이용해주세요.'
                 exampleEmbed.fields = []
-                data_row = await order.dictionary(param.data.result)
             }
+
+            if (data.search && data.result.count == 0) {
+                exampleEmbed.title = '검색 결과 : [' + items_name + ']'
+                exampleEmbed.description = data.result.content
+                exampleEmbed.fields = []
+            }
+
+
         } else {
             exampleEmbed.title = "전투정보실 채널에서 조회하세요!"
             exampleEmbed.description = ''
@@ -262,8 +271,8 @@ const discord = {
         }
 
         result.exampleEmbed = exampleEmbed
-        result.search = param.data.search
-        result.mode = param.data.mode
+        result.search = data.search
+        result.mode =data.mode
         result.row = (data_row != '') ? data_row.row : ''
 
         console.log(result)
