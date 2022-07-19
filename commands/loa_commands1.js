@@ -48,7 +48,7 @@ const discord = {
     },
     character_search: async (interaction, url, nickname) => {
         let result = {}
-        let info = await axios.get(url+'/api/info?nickname=' + encodeURI(nickname) + '&username=' + encodeURI(interaction.member.nickname) + '&command=' + encodeURI("검색"))
+        let info = await axios.get(url+'/api/info/' + encodeURI(interaction.member.nickname) + '/' + encodeURI(nickname))
 
         if (interaction.channelId === channelsId){
             if(info.data.search) {
@@ -79,7 +79,7 @@ const discord = {
     },
     character_barracks: async (interaction, url, nickname) => {
         let result = {}
-        let info = await axios.get(url+'/api/info?nickname=' + encodeURI(nickname) + '&username=' + encodeURI(interaction.member.nickname) + '&command=' + encodeURI("배럭"))
+        let info = await axios.get(url+'/api/info/' + encodeURI(interaction.member.nickname) + '/' + encodeURI(nickname))
 
         if (interaction.channelId === channelsId){
             if(info.data.search) {
@@ -111,7 +111,7 @@ const discord = {
     },
     character_life: async (interaction, url, nickname) => {
         let result = {}
-        let info = await axios.get(url+'/api/internal_stability?nickname=' + encodeURI(nickname) + '&username=' + encodeURI(interaction.member.nickname) + '&command=' + encodeURI("내실"))
+        let info = await axios.get(url+'/api/internal_stability/' + encodeURI(interaction.member.nickname) + '/' + encodeURI(nickname))
 
         exampleEmbed.title = '생활 수집 / 수집품 안내'
         if (interaction.channelId === channelsId){
@@ -145,7 +145,7 @@ const discord = {
     loa_challenge: async (interaction, url) => {
         exampleEmbed.title = '도전 가디언 토벌 / 어비스 던전 안내'
         if (interaction.channelId === channelsId){
-            const result = await axios.get(url+'/api/inven/challenge?&username=' + encodeURI(interaction.member.nickname) + '&command=' + encodeURI("도전"))
+            const result = await axios.get(url+'/api/inven/challenge/' + encodeURI(interaction.member.nickname))
             const param = result.data
 
             exampleEmbed.description = "▶ 기간 : " + param.date.split("이번 주 도전 가디언 & 어비스 날짜 및 시간 :")[1]
@@ -161,7 +161,7 @@ const discord = {
     loa_totay: async (interaction, url) => {
         exampleEmbed.title = '로스트아크 스케줄 정보'
         if (interaction.channelId === channelsId){
-            const result = await axios.get(url+'/api/inven/timer?username=' + encodeURI(interaction.member.nickname) + '&command=' + encodeURI("스케줄"))
+            const result = await axios.get(url+'/api/inven/timer/' + encodeURI(interaction.member.nickname))
             const param = result.data
 
             exampleEmbed.description = ''
@@ -175,43 +175,51 @@ const discord = {
         return exampleEmbed
     },
     loa_shop: async (interaction, url) => {
-        let shop_param = ""
-        let items_name = ""
-
+        let result = "";
+        let shop = {}
         if(interaction.commandName === "상점") {
             items_name = interaction.options.getString('아이템')
         }
-
         if(interaction.customId === 'items'){
             items_name = interaction.values[0]
         }
 
-        const result = await axios.get(url+'/api/shop/search?items=' + encodeURI(items_name) +'&username=' + encodeURI(interaction.member.nickname) + '&command=' + encodeURI("상점"))
+        const param = await axios.get(url+'/api/shop/search/' + encodeURI(interaction.member.nickname) + '/' + encodeURI(items_name))
+        const data = param.data
+
+        console.log(data)
 
         if (interaction.channelId === channelsId){
-            const param = result.data
-            shop_param = await order.shop(param)
-            let item = ( 'item_name' in shop_param ) ? shop_param.item_name : items_name
-            exampleEmbed.title = "아이템 명 : [" + item  + "]"
-            exampleEmbed.description = ''
-            exampleEmbed.fields = shop_param.data
+            if(data.mode){
+                result = await order.shop(data)
+                title = result.item_name != false ? result.item_name : items_name
+
+                exampleEmbed.title = "아이템 명 > " + title
+                exampleEmbed.description = ''
+                exampleEmbed.fields = result.data
+            } else {
+                exampleEmbed.title = "아이템 명 > " + items_name
+                exampleEmbed.description = data.items
+                exampleEmbed.fields = []
+            }
         } else {
             exampleEmbed.description = "전투정보실 채널에서 조회하세요!"
             exampleEmbed.fields = []
         }
 
-        final_result = {
-            row: shop_param.row ? shop_param.row : false,
+        shop = {
+            row: !result.row ? false : result.row,
             exampleEmbed: exampleEmbed
         }
 
-        console.log(final_result)
-        return final_result
+        console.log(shop)
+
+        return shop
     },
     loa_shop_mari: async (interaction, url) => {
         const shop_param = ""
         let items_name = ""
-        const result = await axios.get(url+'/api/shop/mari?username=' + encodeURI(interaction.member.nickname) + '&command=' + encodeURI("마리샵"));
+        const result = await axios.get(url+'/api/shop/mari/' + encodeURI(interaction.member.nickname));
 
         exampleEmbed.title = '로스트아크 마리샵'
         if (interaction.channelId === channelsId){
@@ -239,7 +247,7 @@ const discord = {
             items_name = interaction.values[0]
         }
 
-        const param = await axios.get(url+'/api/loa/dictionary?username=' + encodeURI(interaction.member.nickname) + '&items=' + encodeURI(items_name) + '&command=' + encodeURI("사전"));
+        const param = await axios.get(url+'/api/loa/dictionary/' + encodeURI(interaction.member.nickname) + '/' + encodeURI(items_name));
         const data = param.data
         console.log(param.data.result)
         if (interaction.channelId === channelsId) {
@@ -262,8 +270,6 @@ const discord = {
                 exampleEmbed.description = data.result.content
                 exampleEmbed.fields = []
             }
-
-
         } else {
             exampleEmbed.title = "전투정보실 채널에서 조회하세요!"
             exampleEmbed.description = ''
@@ -272,7 +278,7 @@ const discord = {
 
         result.exampleEmbed = exampleEmbed
         result.search = data.search
-        result.mode =data.mode
+        result.mode = data.mode
         result.row = (data_row != '') ? data_row.row : ''
 
         console.log(result)

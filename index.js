@@ -86,11 +86,7 @@ client.on('interactionCreate', async(interaction) => {
     if (interaction.commandName === "상점") {
         await interaction.deferReply();
         shop = await loa_commands1.loa_shop(interaction, url)
-        if(shop.row != false) {
-            await interaction.followUp({ embeds: [shop.exampleEmbed], components: [shop.row] })
-        } else {
-            await interaction.followUp({ embeds: [shop.exampleEmbed] })
-        }
+        shop.row != false ? await interaction.followUp({ embeds: [shop.exampleEmbed], components: [shop.row] }) : await interaction.followUp({ embeds: [shop.exampleEmbed] })
     }
     if (interaction.commandName === "마리샵") {
         result = await loa_commands1.loa_shop_mari(interaction, url)
@@ -99,12 +95,7 @@ client.on('interactionCreate', async(interaction) => {
     if (interaction.commandName === "사전") {
         await interaction.deferReply();
         result = await loa_commands1.dictionary(interaction, url)
-        if(result.row != '') {
-            await interaction.followUp({ embeds: [result.exampleEmbed], components: [result.row] })
-        } else {
-            await interaction.followUp({ embeds: [result.exampleEmbed] })
-        }
-
+        result.row != '' ? await interaction.followUp({ embeds: [result.exampleEmbed], components: [result.row] }) : await interaction.followUp({ embeds: [result.exampleEmbed] })
     }
 })
 

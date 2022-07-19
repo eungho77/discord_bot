@@ -175,59 +175,53 @@ const order = {
         return data
     },
     shop: async (param) => {
-        let result = param.items
-        let data = [];
-        let row_data = [];
-        let items = "";
-        var count = 1
-        let shop_result = '';
+        let data = []
 
-        if(Array.isArray(result)){
-            if(param.mode === "Success"){
-                for(z of result){
-                    row_data.push({label: z, description: '', value: z})
-                }
-                data.push({ name: "[아래 선택 사항을 선택하세요.]", value: "▶ 그럼 자동으로 검색이 됩니다.", inline: true})
-            }
+        let row = ""
+        let row_data = []
+        let item_name = ""
 
-            const row = new MessageActionRow()
-                .addComponents(
-                    new MessageSelectMenu()
-                        .setCustomId('items')
-                        .setPlaceholder('아이템을 선택하세요.')
-                        .addOptions(row_data),
-                )
+        let shop = {}
 
-            data.push({ name: '[출처]', value: "▶ 개발자 : 모코코더" })
-            
-            init = {
-                row: row,
-                data: data
+        if(param.total > 1) {
+            for(let a of param.items) {
+                row_data.push({label: a, description: '', value: a})
             }
-        } else {
-            if(param.mode === "Success") {
-                shop_result = await axios.get("http://152.70.248.4:5000/trade/" + result.replace(/[^0-9]/g, ""))
-                if(shop_result.data.Result === "Success") {
-                    let count = 1;
-                    for(i of shop_result.data.Pricechart) {
-                        items += '▶ ' + i.Amount + '개 / ' + i.Price + '골드 \n'
-                    }
+            data.push({ name: "[아래 선택 사항을 선택하세요.]", value: "▶ 그럼 자동으로 검색이 됩니다.", inline: true})
 
-                    data.push({ name: "[거래소]", value: items})
-                }
-            }
-            if(param.mode === "Failed") {
-                data.push({ name: 'error', value: result })
-            }
-
-            data.push({ name: '[출처]', value: "▶ 개발자 : 모코코더" })
-            
-            init = {
-                item_name: shop_result.data.Name,
-                data: data
-            }
+            row = new MessageActionRow()
+            .addComponents(
+                new MessageSelectMenu()
+                    .setCustomId('items')
+                    .setPlaceholder('아이템을 선택하세요.')
+                    .addOptions(row_data),
+            )
         }
-        return init
+        if(param.total == 1) {
+            let arr = param.items[0].split(" : ")
+            let items = ""
+            const item = await axios.get("http://152.70.248.4:5000/trade/" + encodeURI(parseInt(arr[1])))
+            const result = item.data
+
+            if(result.Result == "Success") {
+                for(let i of result.Pricechart) {
+                    items += '▶ ' + i.Amount + '개 / ' + i.Price + '골드 \n'
+                }
+                data.push({ name: "[거래소]", value: items})
+            }
+            
+            item_name = arr[0]
+        }
+
+        data.push({ name: '[출처]', value: "▶ 개발자 : 모코코더" })
+
+        shop = {
+            item_name: item_name != "" ? item_name : "",
+            row: row != "" ? row : false,
+            data: data
+        }
+
+        return shop
     },
     shop_mari: function(param) {
         const data = []
