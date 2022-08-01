@@ -200,7 +200,7 @@ const order = {
         if(param.total == 1) {
             let arr = param.items[0].split(" : ")
             let items = ""
-            const item = await axios.get("http://152.70.248.4:5000/trade/" + encodeURI(parseInt(arr[1])))
+            const item = await axios.get("https://lostarkapi.ga/trade/" + encodeURI(parseInt(arr[1])))
             const result = item.data
 
             if(result.Result == "Success") {

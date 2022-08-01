@@ -29,8 +29,9 @@ const discord = {
     },
     loa_totay: async (msg, url) => {
         exampleEmbed.title = '로스트아크 스케줄 정보'
+        console.log(msg)
         if (msg.channelId === channelsId){
-            const result = await axios.get(url+'/api/inven/timer')
+            const result = await axios.get(url+'/api/inven/timer1/')
             const param = result.data
 
             exampleEmbed.description = ''
