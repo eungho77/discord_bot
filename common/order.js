@@ -227,7 +227,7 @@ const order = {
         const data = []
         let item = ""
 
-        for(let a of param) {
+        for(let a of param.result) {
             if (a.mode) {
                 item = "";
                 for (let b of a.mari_list) {

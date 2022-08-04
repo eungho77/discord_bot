@@ -217,16 +217,21 @@ const discord = {
         return shop
     },
     loa_shop_mari: async (interaction, url) => {
-        const shop_param = ""
-        let items_name = ""
         const result = await axios.get(url+'/api/shop/mari/' + encodeURI(interaction.member.nickname));
+        const param = result.data
 
-        exampleEmbed.title = '로스트아크 마리샵'
         if (interaction.channelId === channelsId){
-            const param = result.data
 
-            exampleEmbed.description = ""
-            exampleEmbed.fields = await order.shop_mari(param)
+            if(param.mode) {
+                const data = await order.shop_mari(param)
+                exampleEmbed.title = '로스트아크 마리샵'
+                exampleEmbed.description = ""
+                exampleEmbed.fields = data
+            } else {
+                exampleEmbed.title = '[' + param.title + ']'
+                exampleEmbed.description = ''
+                exampleEmbed.fields = []
+            }
         } else {
             exampleEmbed.description = "전투정보실 채널에서 조회하세요!"
             exampleEmbed.fields = []
@@ -249,25 +254,31 @@ const discord = {
 
         const param = await axios.get(url+'/api/loa/dictionary/' + encodeURI(interaction.member.nickname) + '/' + encodeURI(items_name));
         const data = param.data
-        console.log(param.data.result)
+        console.log(param.data)
         if (interaction.channelId === channelsId) {
-            if (data.search && data.result.count == 1) {
+            if (data.search && data.result.count == 1 && data.mode) {
                 const result = await order.dictionary(data.result)
                 exampleEmbed.title = data.result.name
                 exampleEmbed.description = ''
                 exampleEmbed.fields = result.data
             }
 
-            if (data.search && data.result.count > 1) {
+            if (data.search && data.result.count > 1 && data.mode) {
                 data_row = await order.dictionary(data.result)
                 exampleEmbed.title = '검색 건 수가 ' + data.result.name.split(", ").length + '개 있습니다.'
                 exampleEmbed.description = '검색 결과 : [' + items_name + '] \n아래 선택 사항을 이용해주세요.'
                 exampleEmbed.fields = []
             }
 
-            if (data.search && data.result.count == 0) {
+            if (data.search && data.result.count == 0 && data.mode) {
                 exampleEmbed.title = '검색 결과 : [' + items_name + ']'
                 exampleEmbed.description = data.result.content
+                exampleEmbed.fields = []
+            }
+
+            if (!data.mode) {
+                exampleEmbed.title = '[' + data.title + ']'
+                exampleEmbed.description = ''
                 exampleEmbed.fields = []
             }
         } else {
