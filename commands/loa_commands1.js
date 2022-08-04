@@ -55,15 +55,19 @@ const discord = {
                 exampleEmbed.title = '정보 / 기본, 전투 특성'
                 exampleEmbed.description = '[' + nickname + ']님이 가지고 있는 기본 정보입니다.'
                 exampleEmbed.fields = order.search(info.data)
+                exampleEmbed.image = {
+                    url: info.data.image
+                }
             } else {
                 exampleEmbed.title = '[' + nickname + ']님은 존재하지 않습니다.'
                 exampleEmbed.description = info.data.content
                 exampleEmbed.fields = []
+                exampleEmbed['image'].remove()
             }
             if(!info.data.mode) {
                 exampleEmbed.title = '[' + info.data.title + ']'
                 exampleEmbed.description = ''
-                exampleEmbed.fields = []
+                exampleEmbed['image'].remove()
             }
         } else {
             exampleEmbed.description = "전투정보실 채널에서 조회하세요!"
