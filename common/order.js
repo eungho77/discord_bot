@@ -22,20 +22,28 @@ const order = {
         let engrave = "" // 각인
         let jewel = "" // 보석
 
-        for(var a of result.battle){
-            battle += '▶ ' + a.name + ' : ' + a.number + "\n"
+        if(result.hasOwnProperty('battle')) {
+            for(var a of result.battle){
+                battle += '▶ ' + a.name + ' : ' + a.number + "\n"
+            }
         }
 
-        for(var a of result.card){
-            card += '▶ ' + a.name + ' : ' + a.stone_count + "\n"
+        if(result.hasOwnProperty('card')) {
+            for (var a of result.card) {
+                card += '▶ ' + a.name + ' : ' + a.stone_count + "\n"
+            }
         }
 
-        for (var a of result.engrave) {
-            engrave += '▶ ' + a.name + ' : ' + a.level + "\n"
+        if(result.hasOwnProperty('engrave')) {
+            for (var a of result.engrave) {
+                engrave += '▶ ' + a.name + ' : ' + a.level + "\n"
+            }
         }
 
-        for (var a of result.jewel) {
-            jewel += '▶ ' + a.level + ' ' + a.type + "의 보석 > " + a.name + "의 " + a.effect + "\n"
+        if(result.hasOwnProperty('jewel')) {
+            for (var a of result.jewel) {
+                jewel += '▶ ' + a.level + ' ' + a.type + "의 보석 > " + a.name + "의 " + a.effect + "\n"
+            }
         }
 
         data.push(
@@ -52,12 +60,12 @@ const order = {
             },
             {
                 name: '[기본 특성]',
-                value: '▶ 공격력 : ' + result.basic.attack + '\n▶ 최대 생명력 : ' + result.basic.hp,
+                value: (result.hasOwnProperty('basic')) ? '▶ 공격력 : ' + result.basic.attack + '\n▶ 최대 생명력 : ' + result.basic.hp : '기본 특성이 없습니다.',
                 inline: true
             },
             {
                 name: '[전투 특성]',
-                value:  battle,
+                value:  (battle.length == 0) ? '전투 특성이 없습니다.' : battle,
                 inline: true
             },
             {
@@ -88,31 +96,35 @@ const order = {
         let sail = "" // 항해
         let count = 0
 
-        while(true) {
-            equipment += '▶ ' + result.equipment[count].name + '\n'
-            if(count == result.equipment.length - 10){
+        if(result.hasOwnProperty('equipment')) {
+            while (true) {
+                equipment += '▶ ' + result.equipment[count].name + '\n'
+                if (count == result.equipment.length - 10) {
+                    count++
+                    break
+                }
                 count++
-                break
             }
-            count++
-        }
-        while(true) {
-            accessories += '▶ ' + result.equipment[count].name + '\n'
-            if(count == result.equipment.length - 3){
+            while (true) {
+                accessories += '▶ ' + result.equipment[count].name + '\n'
+                if (count == result.equipment.length - 3) {
+                    count++
+                    break
+                }
                 count++
-                break
             }
-            count++
-        }
-        while(true) {
-            sail += '▶ ' + result.equipment[count].name + '\n'
-            if(count == result.equipment.length - 1){
-                break
+            while (true) {
+                sail += '▶ ' + result.equipment[count].name + '\n'
+                if (count == result.equipment.length - 1) {
+                    break
+                }
+                count++
             }
-            count++
         }
-        for(let avatars of result.avatars){
-            avatar += '▶ ' + avatars.name + '\n'
+        if(result.hasOwnProperty('avatars')) {
+            for (let avatars of result.avatars) {
+                avatar += '▶ ' + avatars.name + '\n'
+            }
         }
 
         data.push(
@@ -128,12 +140,12 @@ const order = {
             },
             {
                 name:  '[장신구 목록]',
-                value: (accessories.length == 0) ? '보유하신 아바타가 없습니다.' : accessories,
+                value: (accessories.length == 0) ? '보유하신 장신구가 없습니다.' : accessories,
                 inline: false
             },
             {
                 name:  '[항해물 목록]',
-                value: (sail.length == 0) ? '보유하신 아바타가 없습니다.' : sail,
+                value: (sail.length == 0) ? '보유하신 항해물이 없습니다.' : sail,
                 inline: false
             },
         )
@@ -146,21 +158,23 @@ const order = {
         let skill_detail = ""
         let count = 1
 
-        for(let skills of result.skills){
-            skill += count++ + '. [' + skills.name + '] > '
+        if(result.hasOwnProperty('skills')) {
+            for (let skills of result.skills) {
+                skill += count++ + '. [' + skills.name + '] > '
 
-            for(let detail of skills.detail){
-                skill_detail += detail.slot + "-"
+                for (let detail of skills.detail) {
+                    skill_detail += detail.slot + "-"
+                }
+
+                skill += skill_detail.slice(0, -1) + '\n'
+                skill_detail = ""
             }
-
-            skill += skill_detail.slice(0, -1) + '\n'
-            skill_detail = ""
         }
 
         data.push(
             {
                 name:  '▶ [스킬 이름] > {스킬 트리}',
-                value: skill,
+                value: (skill.length == 0) ? '스킬 정보가 없습니다.' : skill,
                 inline: true
             }
         )
@@ -171,8 +185,10 @@ const order = {
         const data = []
         let baraks = ""
 
-        for(var a of result.expand){
-            baraks += '▶ ' + a.server + " / " + a.job + " / " + a.avg_item_level + " / " + a.nickname + "\n"
+        if(result.hasOwnProperty('expand')) {
+            for (var a of result.expand) {
+                baraks += '▶ ' + a.server + " / " + a.job + " / " + a.avg_item_level + " / " + a.nickname + "\n"
+            }
         }
 
         data.push(
@@ -193,9 +209,10 @@ const order = {
         // for(let a of result.life){
         //     life += '▶ ' + a.name + " > " + a.level + "\n"
         // }
-
-        for(var a of result.collectibles){
-            collection += '▶ ' + a.name + " > " + a.count + "개 \n"
+        if (result.hasOwnProperty('collectibles')){
+            for(var a of result.collectibles){
+                collection += '▶ ' + a.name + " > " + a.count + "개 \n"
+            }
         }
 
         // 생활 스킬
@@ -206,8 +223,8 @@ const order = {
             //     inline: true
             // },
             {
-                name: '[내실]',
-                value: collection,
+                name: '[수집품]',
+                value: (collection.length == 0) ? '보유하신 수집품이 없습니다.' : collection,
                 inline: true
             }
         )
