@@ -1,17 +1,28 @@
-let selectBox = [{
+let selectBox = [
+  {
     "label": "캐릭터 검색",
     "description": "기본 정보, 기본 특성, 전투 특성",
     "value": "1"
   },
   {
-    "label": "배럭",
-    "description": "배럭캐릭터",
+    "label": "장비 목록 / 아바타 목록",
+    "description": "기본 정보, 기본 특성, 전투 특성",
     "value": "2"
   },
   {
-    "label": "캐릭터 내실",
-    "description": "생활 스킬, 수집품 정보",
+    "label": "스킬 정보",
+    "description": "스킬 정보",
     "value": "3"
+  },
+  {
+    "label": "배럭",
+    "description": "보유 캐릭터",
+    "value": "4"
+  },
+  {
+    "label": "내실",
+    "description": "수집품 정보",
+    "value": "5"
   }
 ]
 

@@ -40,9 +40,14 @@ const order = {
 
         data.push(
             {
+                name: '[영지]',
+                value: '▶ 영지 이름 : ' + result.townName + '\n▶ 영지 레벨 : ' + result.townLevel,
+                inline: true
+            },
+            {
                 name: '[기본 정보]',
-                value: '▶ 서버 : ' + result.server + '\n▶ 직업 : ' + result.job
-                + '\n▶ 원정대 레벨 : Lv.' + result.expedition + '\n▶ 레벨 : ' + result.level + '\n▶ 아이템 레벨 : ' + result.itemLevel,
+                value: '▶ 서버 : ' + result.server + '\n▶ 직업 : ' + result.job + '\n▶ 길드 : ' + result.guild
+                + '\n▶ 원정대 레벨 : Lv.' + result.expedition + '\n▶ 레벨 : ' + result.level + '\n▶ 장착 아이템 (평균) : ' + result.avg_item_level + '\n▶ 장착 아이템 (최대) : ' + result.max_item_level,
                 inline: true
             },
             {
@@ -71,23 +76,109 @@ const order = {
             }
         )
 
-        console.log('ddd')
         console.log(data)
 
         return data
     },
+    equipment: function(result){
+        const data = []
+        let equipment = "" // 장비구
+        let accessories = "" // 장신구
+        let avatar = "" // 아바타
+        let sail = "" // 항해
+        let count = 0
+
+        while(true) {
+            equipment += '▶ ' + result.equipment[count].name + '\n'
+            if(count == result.equipment.length - 10){
+                count++
+                break
+            }
+            count++
+        }
+        while(true) {
+            accessories += '▶ ' + result.equipment[count].name + '\n'
+            if(count == result.equipment.length - 3){
+                count++
+                break
+            }
+            count++
+        }
+        while(true) {
+            sail += '▶ ' + result.equipment[count].name + '\n'
+            if(count == result.equipment.length - 1){
+                break
+            }
+            count++
+        }
+        for(let avatars of result.avatars){
+            avatar += '▶ ' + avatars.name + '\n'
+        }
+
+        data.push(
+            {
+                name:  '[장비구 목록]',
+                value: (equipment.length == 0) ? '보유하신 장비가 없습니다.' : equipment,
+                inline: false
+            },
+            {
+                name:  '[아바타 목록]',
+                value: (avatar.length == 0) ? '보유하신 아바타가 없습니다.' : avatar,
+                inline: false
+            },
+            {
+                name:  '[장신구 목록]',
+                value: (accessories.length == 0) ? '보유하신 아바타가 없습니다.' : accessories,
+                inline: false
+            },
+            {
+                name:  '[항해물 목록]',
+                value: (sail.length == 0) ? '보유하신 아바타가 없습니다.' : sail,
+                inline: false
+            },
+        )
+
+        return data
+    },
+    skill: function(result){
+        const data = []
+        let skill = ""
+        let skill_detail = ""
+        let count = 1
+
+        for(let skills of result.skills){
+            skill += count++ + '. [' + skills.name + '] > '
+
+            for(let detail of skills.detail){
+                skill_detail += detail.slot + "-"
+            }
+
+            skill += skill_detail.slice(0, -1) + '\n'
+            skill_detail = ""
+        }
+
+        data.push(
+            {
+                name:  '▶ [스킬 이름] > {스킬 트리}',
+                value: skill,
+                inline: true
+            }
+        )
+
+        return data
+    },
     barak: function(result){
-        const data = [];
-        let baraks = "";
+        const data = []
+        let baraks = ""
 
         for(var a of result.expand){
-            baraks += '▶ ' + a.server + " / " + a.job + " / " + a.itemLevel + " / " + a.nickname + "\n"
+            baraks += '▶ ' + a.server + " / " + a.job + " / " + a.avg_item_level + " / " + a.nickname + "\n"
         }
 
         data.push(
             {
                 name:  '▶ 서버 / 직업 / 아이템레벨 / 닉네임',
-                value: baraks,
+                value: (baraks.length == 0) ? '보유하신 캐릭터가 없습니다.' : baraks,
                 inline: true
             }
         )
@@ -95,25 +186,25 @@ const order = {
         return data
     },
     life: function (result) {
-        const data = [];
-        let collection = "";
-        let life = "";
+        const data = []
+        let collection = ""
+        // let life = "";
+        //
+        // for(let a of result.life){
+        //     life += '▶ ' + a.name + " > " + a.level + "\n"
+        // }
 
-        for(let a of result.life){
-            life += '▶ ' + a.name + " > " + a.level + "\n"
-        }
-
-        for(var a of result.collection){
+        for(var a of result.collectibles){
             collection += '▶ ' + a.name + " > " + a.count + "개 \n"
         }
 
         // 생활 스킬
         data.push(
-            {
-                name: '[생활 스킬]',
-                value: life,
-                inline: true
-            },
+            // {
+            //     name: '[생활 스킬]',
+            //     value: life,
+            //     inline: true
+            // },
             {
                 name: '[내실]',
                 value: collection,

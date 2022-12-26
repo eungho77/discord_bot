@@ -30,15 +30,17 @@ client.on('ready', () => {
                 await rest.put(
                     Routes.applicationGuildCommands(clientId, guildId),
                     { body: commands },
-                );
+                )
+                    .then(() => console.log('모든 명령어 등록 성공'))
+                    .catch(console.error);
             } else {
                 await rest.put(
                     Routes.applicationCommands(clientId),
                     { body: commands },
-                );
+                )
+                    .then(() => console.log('모든 명령어 등록 성공'))
+                    .catch(console.error);
             }
-
-            console.log('모든 명령어 등록 성공')
         } catch (error) {
             console.error(error);
         }
@@ -126,6 +128,8 @@ client.on('interactionCreate', async interaction => {
     if(interaction.customId === 'search') {
         await interaction.deferUpdate()
         result = await loa_commands1.select_item(interaction, url)
+
+        console.log(result)
 
         if(result.mode && result.search){
             await interaction.editReply({embeds: [result.exampleEmbed], components: [selectData.character_search(interaction.values[0].split(":")[1])]})
